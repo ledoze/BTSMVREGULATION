@@ -117,8 +117,10 @@ var identite = document.querySelector("#text-identite");
 var kp = document.querySelector("#slider-Kp");
 var ki = document.querySelector("#slider-Ki");
 var kd = document.querySelector("#slider-Kd");
-var axexplus = document.querySelector("#button-timeplus");
-var axexmoins = document.querySelector("#button-timemoins");
+var ch1axexplus = document.querySelector("#button-ch1plus");
+var ch1axexmoins = document.querySelector("#button-ch1moins");
+var ch2axexplus = document.querySelector("#button-ch2plus");
+var ch2axexmoins = document.querySelector("#button-ch2moins");
 var axeyplus = document.querySelector("#button-yplus");
 var axeymoins = document.querySelector("#button-ymoins");
 var myCanvas = document.getElementById("canvas");
@@ -126,8 +128,9 @@ var ctx2 = myCanvas.getContext("2d");
 var perturbplus = document.querySelector("#button-perturbplus");
 var perturbmoins = document.querySelector("#button-perturbmoins");
 var sortie=0.0;
+var scalech1y= 1;
+var scalech2y= 1;
 var scalex= 1;
-var scaley= 1;
 
 
 /* ######################surveillance Consigne###############*/
@@ -248,20 +251,28 @@ acquisition.addEventListener("click", () => {
   };  
 });
 
-axexplus.addEventListener("click", () => {  
-  scalex=scalex*2;
+ch1axexplus.addEventListener("click", () => {  
+  scalech1y=scalech1y*2;
 });
 
-axexmoins.addEventListener("click", () => { 
-  scalex=scalex/2;
+ch1axexmoins.addEventListener("click", () => { 
+  scalech1y=scalech1y/2;
+});
+
+ch2axexplus.addEventListener("click", () => {  
+  scalech2y=scalech2y*2;
+});
+
+ch2axexmoins.addEventListener("click", () => { 
+  scalech2y=scalech2y/2;
 });
 
 axeyplus.addEventListener("click", () => {
-  scaley=scaley*2;
+  scalex=scalex/2;
 });
 
 axeymoins.addEventListener("click", () => { 
-  scaley=scaley/2;  
+  scalex=scalex*2;  
 });
 
 myCanvas.addEventListener("mousemove", (e) => {  
@@ -274,12 +285,16 @@ myCanvas.addEventListener("mousemove", (e) => {
 
 perturbplus.addEventListener("click", () => { 
   flagperturbplus=!flagperturbplus;
+  flagperturbmoins=true;
   /*console.log("flagperturb",flagperturbplus);
   alert("273 perturb");*/
+  drawSchema();
 });
 
 perturbmoins.addEventListener("click", () => { 
   flagperturbmoins=!flagperturbmoins;
+  flagperturbplus=true;
+  drawSchema();
 });
 
 
@@ -301,7 +316,7 @@ const depart = new Date().getTime();
 
 
 /* ######################Ouverture fichier###############*/
-
+/*
 var openFile = function(event) {
   var input = event.target;
   var reader = new FileReader();
@@ -313,7 +328,7 @@ var openFile = function(event) {
   };
   reader.readAsText(input.files[0]);
 };
-
+*/
 /* ######################FIN Ouverture fichier###############*/
 
 
@@ -385,15 +400,16 @@ function drawSchema(){
   ctxboucle.strokeRect(w/8, 2*h/5, w/7, h/4);
   ctxboucle.arc(w/14,2*h/5+h/8, h/8, 0,2* Math.PI , true); // Cercle extérieur  
   ctxboucle.moveTo(0,2*h/5+h/8);
-  ctxboucle.lineTo(w/14-h/8,2*h/5+h/8);
+  ctxboucle.lineTo(w/14+h/8,2*h/5+h/8);
   ctxboucle.stroke();
   ctxboucle.moveTo(w/14+h/8,2*h/5+h/8);
   ctxboucle.lineTo(w/8,2*h/5+h/8);
   ctxboucle.stroke();
-  ctxboucle.moveTo(w/14,2*h/5+h/4);
+  ctxboucle.moveTo(w/14,2*h/5);
   ctxboucle.lineTo(w/14,2*h/5+h/2);
   ctxboucle.lineTo(w/8+w/7-w/20,2*h/5+h/2);
   ctxboucle.stroke();
+ 
   
   ctxboucle.beginPath();
   ctxboucle.strokeStyle ="rgb(0, 0,255)";
@@ -415,7 +431,13 @@ function drawSchema(){
   ctxboucle.moveTo(w-w/20,2*h/5+h/8);
   ctxboucle.lineTo(w-w/20,2*h/5+h/2);
   ctxboucle.lineTo(w/8+w/7,2*h/5+h/2);
-  ctxboucle.stroke();  
+  ctxboucle.stroke(); 
+  ctxboucle.fillStyle = "#000099";
+  ctxboucle.font = "15px Arial";
+  ctxboucle.fillText("Actionneur", w/8+w/7+w/15+h/16, 2*h/5+3*h/16);
+  ctxboucle.fillText("System",w/8+2*w/7+2*w/15+h/16, 2*h/5+3*h/16);
+  ctxboucle.fillText("Capteur", w/8+3*w/7+3*w/15+h/16, 2*h/5+3*h/16);
+  
   ctxboucle.beginPath();
   ctxboucle.strokeStyle ="rgb(0, 255,0)";
   ctxboucle.arc(w/2, h/5, h/8, 0,2* Math.PI , true);
@@ -439,6 +461,21 @@ function drawSchema(){
     ctxboucle.lineTo(w/8+w/7,2*h/5+h/2);
   };
   ctxboucle.stroke();
+  ctxboucle.fillStyle = "#FF0000";
+  ctxboucle.font = "25px Arial";
+  ctxboucle.fillText("+", w/14-3*h/32, 2*h/5+h/8);
+  ctxboucle.fillText("-", w/14+h/32, 2*h/5+2*h/8-h/32);  
+  ctxboucle.fillText("P  I  D", w/8+h/16, 2*h/5+3*h/16);
+  if(flagperturbplus!=true){
+  ctxboucle.fillStyle = "#009900";
+  ctxboucle.fillText("+", w/2-h/16, h/5+h/32);
+  };
+  if(flagperturbmoins!=true){
+  ctxboucle.fillStyle = "#009900";
+  ctxboucle.font = "30px Arial";
+  ctxboucle.fillText("-", w/2-h/16, h/5+h/32);
+  };
+  
   };
 /* ######################FIN Dessin schema###############*/
 
@@ -581,7 +618,7 @@ function drawGrid(lineWidth, cellWidth, cellHeight, color) {
     // Draw vertical lines
   for (let x = 0; x <= width; x += cellWidth/5) {
     ctx2.beginPath();
-    ctx2.strokeStyle ="gray";
+    ctx2.strokeStyle ="lightblue";
     ctx2.lineWidth=0.2    
     ctx2.moveTo(x, 0);
     ctx2.lineTo(x, height);
@@ -591,7 +628,7 @@ function drawGrid(lineWidth, cellWidth, cellHeight, color) {
       // Draw horizontal lines
   for (let y = 0;y <= height; y += cellHeight/5) {
     ctx2.beginPath();
-    ctx2.strokeStyle ="gray";
+    ctx2.strokeStyle ="lightblue";
     ctx2.lineWidth=0.2    
     ctx2.moveTo(0, y);
     ctx2.lineTo(width, y);
@@ -645,7 +682,7 @@ function clock(time) {
  
 */
 
-  drawGrid(1, bw/10, bh/10, "lightblue");
+  drawGrid(1, bw/10, bh/10, "lightskyblue");
   
 // Dessin Courbe Consigne 
  
@@ -654,18 +691,22 @@ function clock(time) {
   for(var i=1 ; i < bw-1; i++){
     ctx.lineWidth = 1;
     ctx.strokeStyle ="rgb(255, 0,0)";
-    ctx.lineTo(0+2*i,bh/2 -consigne);
-    ctx.moveTo(0+2*i,bh/2 -consigne);
+    ctx.lineTo(0+2*i*scalex,bh/2 -consigne*scalech1y);
+    ctx.moveTo(0+2*i*scalex,bh/2 -consigne*scalech1y);
     ctx.stroke();
   };
   ctx.stroke();
-  ctx.fillStyle = "#000000";
-  var echelle =(scaley*2.5).toString();
+  ctx.fillStyle = "#990000";
+  var echelle =(4/scalech1y).toString();
   echelle=echelle.concat("V/div");
-  ctx.fillText(echelle, bw/10, bh-bh/20);
-  var echelle2 =(2*scalex).toString();
-  echelle2=echelle2.concat("S/div");
-  ctx.fillText(echelle2, bw/10, bh-bh/10);
+  ctx.fillText(echelle, 2*bw/13, bh-bh/20);
+  var echelle2 =(1/scalex).toString();
+  echelle2=echelle2.concat("S/div");  
+  ctx.fillText(echelle2, bw/10, bh-bh/9);
+  var echelle3=(4/scalech2y).toString();
+  ctx.fillStyle = "#0000FF";
+  echelle3=echelle3.concat("V/div");
+  ctx.fillText(echelle3, bw/25, bh-bh/20);
   
   if (flagmarche==true){
     sendMessage("MESURE?");  
@@ -688,8 +729,8 @@ function clock(time) {
     if(flagdebut!=true){
         for(var i=1 ; i < dtsimul.length-1; i++){
           ctx.strokeStyle ="rgb(0, 255, 0)";
-          ctx.lineTo(0+scalex*i*bw/dtsimul.length,bh/2 -scaley*(mesuressimul[i]));
-          ctx.moveTo(0+scalex*i*bw/dtsimul.length,bh/2 -scaley*(mesuressimul[i]));          
+          ctx.lineTo(0+scalex*i*bw/dtsimul.length,bh/2 -scalech2y*(mesuressimul[i]));
+          ctx.moveTo(0+scalex*i*bw/dtsimul.length,bh/2 -scalech2y*(mesuressimul[i]));          
         };
     ctx.stroke();    
     }
@@ -697,15 +738,15 @@ function clock(time) {
         ctx.beginPath();
         for(var i=1 ; i < bw-1; i++){        
           ctx.strokeStyle ="rgb(0, 0, 255)";
-          ctx.lineTo(0+scalex*i,bh/2 -scaley*(mesuressimul[i]));
-          ctx.moveTo(0+scalex*i,bh/2 -scaley*(mesuressimul[i]));      
+          ctx.lineTo(0+scalex*i,bh/2 -scalech2y*(mesuressimul[i]));
+          ctx.moveTo(0+scalex*i,bh/2 -scalech2y*(mesuressimul[i]));      
         };
     ctx.stroke();
         ctx.beginPath();
         for(var i=1 ; i < bw-1; i++){
           ctx.strokeStyle ="rgb(0, 255,0)";
-          ctx.lineTo(0+scalex*i,bh/2 -scaley*(outputregul[i]));
-          ctx.moveTo(0+scalex*i,bh/2 -scaley*(outputregul[i]));      
+          ctx.lineTo(0+scalex*i,bh/2 -scalech2y*(outputregul[i]));
+          ctx.moveTo(0+scalex*i,bh/2 -scalech2y*(outputregul[i]));      
         };
     ctx.stroke(); 
     };
