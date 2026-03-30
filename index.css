@@ -9,6 +9,7 @@ main {
 .grid {
 //  max-width: 96vw; /* Limite la largeur à 96 % de la largeur de la zone d'affichage (« viewport » en anglais) */
   margin: 0 auto; /* Centre horizontalement le conteneur */
+ background-color: #F0EEE9;
 }
 .bouton-aligne{
 margin:10px 2.5% 10px 2.5%;
@@ -69,7 +70,7 @@ color:rgb(255 255 255 / 100%);
   flex-wrap: wrap; 
 }
 .process {
-  border: 2px solid rgb(75 70 74);
+  border: 2px solid rgb(0 191 255);
   border-radius: 0.5em;
   color: red;
   display: flex;
@@ -80,11 +81,11 @@ color:rgb(255 255 255 / 100%);
   /*border: 2px solid rgb(0 0 255);
   border-radius: 0.5em;*/
   /*height:200px;*/
-  background-color: white;
+  background-color: #F0EEE9;
   display: flex;  
   flex-direction: column;
   justify-content:space-between;
-  align-content:space-around;
+  align-content:left;
   flex-wrap: wrap; 
 }
 .boutonperturb {
@@ -144,7 +145,8 @@ background-color: #04AA6D;/* green */
 .button4 {
 border: 2px solid rgb(173,216,230);
 border-radius: 0.5em; 
-background-color: #add8e6;/* blue #008CBA */
+background-color: white;
+color:rgb(0 191 255);
 } 
 
 .textright{
