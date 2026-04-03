@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>BTSMV RÉGULATION 2022:V1.2</title>
-    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="/static/index.css" />
   </head>
   <body>
       <main class="grid"> 
@@ -25,7 +25,7 @@
                     <div class="afficheconsigne">
                       <label for="slider-consigne" class="centre" >Consigne</label>                      
                       <input type="text" id="text-consigne" class="textright" name="consigne"  cols="2" rows="1" style="color: #FF0000;"/>
-                      <input style="accent-color: red" type="range" id="slider-consigne"  name="sliderconsigne" min="0"max="100" value="90" step="10" />
+                      <input style="accent-color: red" type="range" id="slider-consigne"  name="sliderconsigne" min="0"max="100" value="0" step="10" />
                       <button id="button-bf" class="button1" name="bf">BOUCLE-FERMÉE</button>
                       <button id="button-saturation" class="button1"  name="saturation">SATURATION</button>
                       <label for="slider-Kp">K_proportionnel</label>
@@ -57,28 +57,67 @@
                       <button id="button-bo" class="button2" name="bo">BOUCLE-OUVERTE</button>                      
                       <div class="boutonscope">
                         <div>
+                        <button id="button-simul" class="button4" name="simul">SIMULATION</button>
                         <button id="button-acquisition" class="button4" name="acquisition">ACQUISITION</button> 
-                        </div>
-                        <div>
-                        <button id="button-simul" class="button4" name="simul">SIMULATION</button> 
-                        </div>
-                        <div>
-                            <button id="button-pause" class="button4"  name="pause">PAUSE</button>
-                            <button id="button-debut" class="button4" name="debut">DEBUT</button>
                         </div>                        
                         <div>
-                        <button id="button-ch1plus" class="button4" name="ch1plus">CH1 AXE Y+</button> 
-                        <button id="button-ch1moins" class="button4" name="ch1timemoins">CH1 AXE Y-</button> 
-                        </div>
-                        <div>
-                        <button id="button-ch2plus" class="button4" name="ch2plus">CH2 AXE Y+</button> 
-                        <button id="button-ch2moins" class="button4" name="ch2moins">CH2 AXE Y-</button> 
-                        </div>
-                        <div>
-                        <button id="button-yplus" class="button4" name="yplus">AXE X+</button> 
-                        <button id="button-ymoins" class="button4" name="ymoins">AXE X-</button> 
+                        <button id="button-pause" class="button4"  name="pause">PAUSE</button>
+                        <button id="button-debut" class="button4" name="debut">DEBUT</button>
                         </div>                        
+                        <div>
+                        <label  class="labelscope" >VERTICAL V/Div</label>
+                        </div>
+                        <div>                       
+                        <button id="button-ch1plus" class="ch1" name="ch1plus">CH1 +</button> 
+                        <button id="button-ch1moins" class="ch1" name="ch1moins">CH1 -</button>
+                        <button id="button-ch1dc" class="ch1" name="ch1DC">DC</button>
+                        <button id="button-ch1ac" class="ch1" name="ch1AC">AC</button>
+                        <button id="button-ch1gnd" class="ch1" name="ch1GND">GND</button>
+                        </div>
+                        <div>
+                        <button id="button-ch2plus" class="ch2" name="ch2plus">CH2 +</button> 
+                        <button id="button-ch2moins" class="ch2" name="ch2moins">CH2 -</button> 
+                        <button id="button-ch2dc" class="ch2" name="ch2DC">DC</button>
+                        <button id="button-ch2ac" class="ch2" name="ch2AC">AC</button>
+                        <button id="button-ch2gnd" class="ch2" name="ch2GND">GND</button>
+                        </div>
+                     <!--
+                      <label  class="button4" >V/Div</label> 
+                         <div>
+                        <button id="button-ch1plus" class="ch1" name="ch1plus">CH1 +</button> 
+                        <button id="button-ch1moins" class="ch1" name="ch1timemoins">CH1 -</button> 
+                        </div>
                         
+                        <label  class="labelscope" >position</label>
+                        <div>
+                        <button id="button-ch2plus" class="button4" name="ch2plus">CH2 +</button> 
+                        <button id="button-ch2moins" class="button4" name="ch2moins">CH2 -</button> 
+                        </div>
+                      -->
+                        <div>
+                        <label  class="labelscope" >POS</label>
+                        <button id="button-ch1posplus" class="ch1" name="ch1posplus">CH1 &#8607;</button> 
+                        <button id="button-ch1posmoins" class="ch1" name="ch1posmoins">CH1 &#8609</button>
+                        <button id="button-ch2posplus" class="ch2" name="ch2posplus">CH2 &#8607</button> 
+                        <button id="button-ch2posmoins" class="ch2" name="ch2posmoins">CH2 &#8609</button> 
+                        </div>
+                        <div>
+                        <label  class="labelscope" >HORIZONTAL</label>
+                        <button id="button-yplus" class="button4" name="yplus">TIME +</button> 
+                        <button id="button-ymoins" class="button4" name="ymoins">TIME -</button> 
+                        </div>                        
+                        <!-- -->
+                        <div>
+                        <label  class="labelscope" >MATHS</label>
+                        <button id="button-ch1moinsch2" class="math" name="ch1moinsch2">CH1-CH2</button> 
+                        <button id="button-ch1plusch2" class="math" name="ch1plusch2">CH1+CH2</button>                        
+                        </div>
+                        <div>
+                        <button id="button-ch1ch2" class="math" name="ch1ch2">CH1*CH2</button>
+                        <button id="button-ch1fft" class="math" name="ch1fft">FFT CH1</button>
+                        <button id="button-ch2fft" class="math" name="ch2fft">FFT CH2</button>
+                        </div>
+                        <!-- -->
                         <div>
                         <button id="button-save" class="button4"  name="save">SAVE</button>  
                         </div>
@@ -88,7 +127,7 @@
           </div>         
        </div>
   </main>  
-    <script src="index.js" defer></script>
+    <script src="/static/index.js" defer></script>
     <link href="index.css" rel="stylesheet"> 
   </body>
 </html>
