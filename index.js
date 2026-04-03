@@ -17,6 +17,7 @@ var websocket;
 window.addEventListener("load", onLoad);
 var interval;
 var t;
+var setPoints=[];
 var mesures=[];
 var dt=[];
 var mesuressimul=[];
@@ -24,7 +25,8 @@ var dtsimul=[];
 var outputregul=[];
 var lastTime ;
 const canvasdim = document.getElementById("canvas");
-var nmax=canvasdim.width
+var nmax = canvasdim.width;
+
 function onLoad() {
   initializeSocket();
   var dim=document.documentElement.clientWidth; 
@@ -63,6 +65,7 @@ function onMessage(event) {
     mesures.push(parseFloat(t));
     process_variable=parseFloat(t);
     mesure.value=t;
+    setPoints.push(consigne);
     };
   };
     if(dt.length > nmax-1){
@@ -79,6 +82,8 @@ function sendMessage(message) {
   /*print("lign318 send message = ",message);*/
   //console.log("lign265 send message = ",message);  
 };
+var posch2=0.0;
+var posch1=0.0;
 var posx = 0.0;
 var posy = 0.0;
 var mouvement = 0.0;
@@ -96,6 +101,8 @@ var flagdebut = true;
 var flagsat = true;
 var flagperturbplus = true;
 var flagperturbmoins = true;
+var flagch1gnd  = true;
+var flagch2gnd  = true;
 var messages = "mes warnings ";
 var now = new Date();
 var bf = document.querySelector("#button-bf");
@@ -127,6 +134,13 @@ var myCanvas = document.getElementById("canvas");
 var ctx2 = myCanvas.getContext("2d");
 var perturbplus = document.querySelector("#button-perturbplus");
 var perturbmoins = document.querySelector("#button-perturbmoins");
+var ch1posplus = document.querySelector("#button-ch1posplus");
+var ch1posmoins = document.querySelector("#button-ch1posmoins");
+var ch2posplus = document.querySelector("#button-ch2posplus");
+var ch2posmoins = document.querySelector("#button-ch2posmoins");
+var ch1gnd = document.querySelector("#button-ch1gnd");
+var ch2gnd = document.querySelector("#button-ch2gnd");
+
 var sortie=0.0;
 var scalech1y= 1;
 var scalech2y= 1;
@@ -140,7 +154,7 @@ input.addEventListener("input", (event) => {
       value.value = input.value;
       console.log("138 value inputvalue",value.textContent,input.value);
       if(stage==1){
-      stage=2;
+      stage=2;      
       };
     }
     else{
@@ -156,7 +170,7 @@ input.addEventListener("input", (event) => {
     }; 
 });
 value.addEventListener("input", (event) => {
-input.value=value.value;
+ input.value=value.value;
 });
 value.value = input.value;
 
@@ -205,18 +219,21 @@ debut.addEventListener("click", () => {
 });
 
 bo.addEventListener("click", () => {  
-  flagbo=true;   
+  flagbo=true
   drawSchema(); 
 });
 
-valid.addEventListener("click", () => {  
-  stage=1;
-  const instant = new Date().getTime();
-  text1=instant.toString();
-  text2=identite.value;
-  text2=text2.concat(" : ",text1);
-  messages=messages.concat(text2);
-  textData.value=messages;      
+valid.addEventListener("click", () => {
+    if (stage==0){
+      stage=1;
+      const instant = new Date().getTime();
+      text1=instant.toString();
+      text2=identite.value;
+      text2=text2.concat(" : ",text1);
+      messages=messages.concat(text2);
+      textData.value=messages;  
+      alert("Bravo! Modifier la consigne a 50"); 
+    };
 });
 
 save.addEventListener("click", () => {  
@@ -231,11 +248,11 @@ save.addEventListener("click", () => {
 simulation.addEventListener("click", () => {  
   flagsimul=!flagsimul;
   if (flagsimul==true){
-      simulation.style.color="green";
-      simulation.style.background = "linear-gradient(to right, #DCE35B 0%, #45B649  51%, #DCE35B  100%)";
+      simulation.style.color="blue";
+      /*simulation.style.background = "linear-gradient(to right, #0000FF 0%, #45B649  51%, #0000FF  100%)";*/
   }
   else{
-      simulation.style.color="red";
+      simulation.style.color="lightblue";
   };  
 });
 
@@ -243,11 +260,11 @@ acquisition.addEventListener("click", () => {
   flagmarche=!flagmarche;
       //window.alert("yo");
   if (flagmarche==true){
-      acquisition.style.color="green";
+      acquisition.style.color="blue";
       acquisition.style.background = "linear-gradient(to right, #DCE35B 0%, #45B649  51%, #DCE35B  100%)";
   }
   else{
-      acquisition.style.color="red";
+      acquisition.style.color="lightblue";
   };  
 });
 
@@ -278,26 +295,73 @@ axeymoins.addEventListener("click", () => {
 myCanvas.addEventListener("mousemove", (e) => {  
      //console.log(e.clientX , e.clientY ); 
      //mouvement=mouvement+Math.sqrt((posx-e.clientX)**2+(posy-e.clientY)**2);
-     posx=e.clientX;
+    /* posx=e.clientX;
      posy = e.clientY;
      console.log("mouvement mycanvas",posx,posy);
+     */
+     if(isdrawing === true){
+            drawLine(x, y,e.clientX, e.clientY);
+            x = e.clientX;
+            y = e.clientY;
+         }
 });
 
-perturbplus.addEventListener("click", () => { 
+
+myCanvas.addEventListener("mousedown", (e) => {
+         x = e.clientX;
+         y = e.clientY;
+         isdrawing = true;
+});
+      
+
+myCanvas.addEventListener("mouseup" ,(e) => {
+         if( isdrawing === true){
+            drawLine(x, y, e.clientX, e.clientY);
+            x = 0;
+            y = 0;
+            isdrawing = false;
+         }
+});
+
+
+
+perturbplus.addEventListener("click", () => {
+  if(stage<2){
+    const instant = new Date().getTime();
+    text1=instant.toString();
+    text2="Respecter Procédure Appentissage";
+    text2=text2.concat(text1);
+    messages=messages.concat(text2);
+    textData.value=messages;      
+    window.alert("Respecter Procédure Appentissage");
+  }
+  else{
   flagperturbplus=!flagperturbplus;
   flagperturbmoins=true;
   /*console.log("flagperturb",flagperturbplus);
   alert("273 perturb");*/
   drawSchema();
+  };
 });
 
-perturbmoins.addEventListener("click", () => { 
+perturbmoins.addEventListener("click", () => {
+  if(stage<2){
+    const instant = new Date().getTime();
+    text1=instant.toString();
+    text2="Respecter Procédure Appentissage";
+    text2=text2.concat(text1);
+    messages=messages.concat(text2);
+    textData.value=messages;      
+    window.alert("Respecter Procédure Appentissage");
+  }
+  else{
   flagperturbmoins=!flagperturbmoins;
   flagperturbplus=true;
   drawSchema();
+  };
 });
 
-
+/*
 myCanvas.addEventListener('click', function(event) {
     console.log("clik mycanvas",event.clientX,event.clientY);
     ctx2.beginPath();
@@ -310,9 +374,50 @@ myCanvas.addEventListener('click', function(event) {
    // Handle click event
 }, false);
 
+*/
+
+ch1posplus.addEventListener("click", () => {
+  posch1-=10;
+});
+
+ch1posmoins.addEventListener("click", () => {
+  posch1+=10;
+});
+
+ch2posplus.addEventListener("click", () => {
+  posch2-=10;
+});
+
+ch2posmoins.addEventListener("click", () => {
+  posch2+=10;
+});
+
+ch1gnd.addEventListener("click", () => { 
+  flagch1gnd = !flagch1gnd;
+});
+
+ch2gnd.addEventListener("click", () => { 
+  flagch2gnd = !flagch2gnd;
+});
+
 /* ######################FIN surveillance click###############*/
 
-const depart = new Date().getTime();
+const depart = new Date().toLocaleString("en-GB", { timeZone: "UTC" })/*.getTime();*/
+var x = 0;
+var y = 0;
+var isdrawing = false;
+function drawLine(x1, y1, x2, y2){
+alert("372 drawline");
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.beginPath();
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 1;
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  ctx.closePath();
+};
 
 
 /* ######################Ouverture fichier###############*/
@@ -400,16 +505,18 @@ function drawSchema(){
   ctxboucle.strokeRect(w/8, 2*h/5, w/7, h/4);
   ctxboucle.arc(w/14,2*h/5+h/8, h/8, 0,2* Math.PI , true); // Cercle extérieur  
   ctxboucle.moveTo(0,2*h/5+h/8);
-  ctxboucle.lineTo(w/14+h/8,2*h/5+h/8);
+  ctxboucle.lineTo(w/14-h/8,2*h/5+h/8);
   ctxboucle.stroke();
   ctxboucle.moveTo(w/14+h/8,2*h/5+h/8);
   ctxboucle.lineTo(w/8,2*h/5+h/8);
   ctxboucle.stroke();
-  ctxboucle.moveTo(w/14,2*h/5);
+  ctxboucle.moveTo(w/14,2*h/5+h/4);
   ctxboucle.lineTo(w/14,2*h/5+h/2);
   ctxboucle.lineTo(w/8+w/7-w/20,2*h/5+h/2);
   ctxboucle.stroke();
- 
+  ctxboucle.font = "15px Arial";
+  ctxboucle.fillStyle = "#FF0000";
+  ctxboucle.fillText("W", w/60, 2*h/5+h/16);
   
   ctxboucle.beginPath();
   ctxboucle.strokeStyle ="rgb(0, 0,255)";
@@ -437,6 +544,12 @@ function drawSchema(){
   ctxboucle.fillText("Actionneur", w/8+w/7+w/15+h/16, 2*h/5+3*h/16);
   ctxboucle.fillText("System",w/8+2*w/7+2*w/15+h/16, 2*h/5+3*h/16);
   ctxboucle.fillText("Capteur", w/8+3*w/7+3*w/15+h/16, 2*h/5+3*h/16);
+  ctxboucle.fillStyle = "#DAA520";
+  ctxboucle.fillText("CH1", w/8+w/7+w/48, 2*h/5-h/16);
+  ctxboucle.fillText("YR", w/8+w/7+w/48, 2*h/5+h/16);
+  ctxboucle.fillStyle = "#0000FF";  
+  ctxboucle.fillText("CH2", w-w/18, 2*h/5-h/16);
+  ctxboucle.fillText("M", w-w/20, 2*h/5+h/16);
   
   ctxboucle.beginPath();
   ctxboucle.strokeStyle ="rgb(0, 255,0)";
@@ -504,6 +617,7 @@ function processing(){
               process_variable = ( process_variable*10*tau.value/(10*tau.value+delta) +gain*consigne*delta/(10*tau.value+delta) );
               mesuressimul.push(parseFloat(process_variable));
               outputregul.push(0);
+              setPoints.push(consigne);
               mesure.value=parseInt(process_variable);
           }
           else{
@@ -536,6 +650,7 @@ function processing(){
             dtsimul.push(duree_x);
             outputregul.push(sortie);
             mesuressimul.push(parseFloat(process_variable));
+            setPoints.push(consigne);
             mesure.value=parseInt(process_variable);
             console.log("438 outputregul",outputregul);          
           };
@@ -557,6 +672,7 @@ function processing(){
           const tmp=dtsimul.shift();
           const mes=mesuressimul.shift();
           const out=outputregul.shift();
+          const sp= setPoints.shift();
       //VERIFIER QUE MESURES ET DT SONT VIDEs !!!!et a faire a la fin du on message  
        }; 
     };   
@@ -663,46 +779,41 @@ function clock(time) {
 // Dessin Axes
 
   var bw = canvas.width; // Box width 
-  var bh = canvas.height; // Box height
-  
-/*
-  
-  ctx.beginPath();
-  //ctx.fillStyle = "white";
-  ctx.lineWidth = 0.2;  
-  for (var x = 0; x < bw; x += bw/10) {
-      ctx.strokeStyle = "rgb(2,7,159)";
-      for (var y = 0; y < bh; y += bh/10) {
-        ctx.strokeRect(x , y , bw/10, bh/10);
-      };
-  };
-  ctx.stroke();
-  //ctx.save();
-  
- 
-*/
+  var bh = canvas.height; // Box height  
 
   drawGrid(1, bw/10, bh/10, "lightskyblue");
+  ctx.fillStyle = "#87CEFA";
+  var login=identite.value;
+  login=login.concat(" le: ",depart);
+  ctx.fillText(login, bw/10, bh/20);
+  ctx.fillText(new Date().toLocaleString("en-GB", { timeZone: "UTC" }), 2*bw/3, bh/20);
   
+
 // Dessin Courbe Consigne 
- 
+/* 
   ctx.beginPath();   
   ctx.moveTo(0, bh/2);
   for(var i=1 ; i < bw-1; i++){
     ctx.lineWidth = 1;
     ctx.strokeStyle ="rgb(255, 0,0)";
-    ctx.lineTo(0+2*i*scalex,bh/2 -consigne*scalech1y);
-    ctx.moveTo(0+2*i*scalex,bh/2 -consigne*scalech1y);
+    
+    //ctx.lineTo(0+2*i*scalex,bh/2 -consigne*scalech1y);
+    //ctx.moveTo(0+2*i*scalex,bh/2 -consigne*scalech1y);
+    
+    ctx.lineTo(0+scalex*i,bh/2 -scalech1y*(setPoints[i]));
+    ctx.moveTo(0+scalex*i,bh/2 -scalech1y*(setPoints[i]));
     ctx.stroke();
   };
   ctx.stroke();
-  ctx.fillStyle = "#990000";
+  */
+  ctx.fillStyle = "#DAA520";
   var echelle =(4/scalech1y).toString();
   echelle=echelle.concat("V/div");
   ctx.fillText(echelle, 2*bw/13, bh-bh/20);
   var echelle2 =(1/scalex).toString();
-  echelle2=echelle2.concat("S/div");  
-  ctx.fillText(echelle2, bw/10, bh-bh/9);
+  echelle2=echelle2.concat("S/div"); 
+  ctx.fillStyle = "#87CEFA";
+  ctx.fillText(echelle2, bw-bw/9, bh/2+bh/20);
   var echelle3=(4/scalech2y).toString();
   ctx.fillStyle = "#0000FF";
   echelle3=echelle3.concat("V/div");
@@ -715,8 +826,8 @@ function clock(time) {
     ctx.moveTo(0, bh/2);    
     for(var i=1 ; i < bw-1; i++){
         ctx.strokeStyle ="rgb(0, 0, 255)";
-        ctx.lineTo(0+2*i,bh/2 -mesures[i]);
-        ctx.moveTo(0+2*i,bh/2 -mesures[i]);      
+        ctx.lineTo(0+2*i,posch2+bh/2 -mesures[i]);
+        ctx.moveTo(0+2*i,posch2+bh/2 -mesures[i]);      
     };
     ctx.stroke();
   }; 
@@ -728,29 +839,68 @@ function clock(time) {
     ctx.moveTo(0, bh/2);
     if(flagdebut!=true){
         for(var i=1 ; i < dtsimul.length-1; i++){
-          ctx.strokeStyle ="rgb(0, 255, 0)";
-          ctx.lineTo(0+scalex*i*bw/dtsimul.length,bh/2 -scalech2y*(mesuressimul[i]));
-          ctx.moveTo(0+scalex*i*bw/dtsimul.length,bh/2 -scalech2y*(mesuressimul[i]));          
+          ctx.strokeStyle ="#DAA520";
+          ctx.lineTo(0+scalex*i*bw/dtsimul.length,posch1+bh/2 -scalech1y*(mesuressimul[i]));
+          ctx.moveTo(0+scalex*i*bw/dtsimul.length,posch1+bh/2 -scalech1y*(mesuressimul[i]));          
         };
     ctx.stroke();    
     }
     else{
+        if(flagch2gnd != true){
+          ctx.beginPath();
+          ctx.strokeStyle ="rgb(0, 0, 255)";          
+          ctx.moveTo(0,posch2+bh/2 );
+          ctx.lineTo(bw,posch2+bh/2);
+          ctx.stroke();  
+        
+        }
+        else{
         ctx.beginPath();
         for(var i=1 ; i < bw-1; i++){        
           ctx.strokeStyle ="rgb(0, 0, 255)";
-          ctx.lineTo(0+scalex*i,bh/2 -scalech2y*(mesuressimul[i]));
-          ctx.moveTo(0+scalex*i,bh/2 -scalech2y*(mesuressimul[i]));      
-        };
+          ctx.lineTo(0+scalex*i,posch2+bh/2 -scalech2y*(mesuressimul[i]));
+          ctx.moveTo(0+scalex*i,posch2+bh/2 -scalech2y*(mesuressimul[i]));
+        };  
+    };
     ctx.stroke();
+    if(flagch1gnd != true){
+          ctx.beginPath();
+          ctx.strokeStyle ="#DAA520";          
+          ctx.moveTo(0,posch1+bh/2 );
+          ctx.lineTo(bw,posch1+bh/2);
+          ctx.stroke();  
+        
+        }
+     else{    
         ctx.beginPath();
         for(var i=1 ; i < bw-1; i++){
-          ctx.strokeStyle ="rgb(0, 255,0)";
-          ctx.lineTo(0+scalex*i,bh/2 -scalech2y*(outputregul[i]));
-          ctx.moveTo(0+scalex*i,bh/2 -scalech2y*(outputregul[i]));      
+          ctx.strokeStyle ="#DAA520";
+          ctx.lineTo(0+scalex*i,posch1+bh/2 -scalech1y*(outputregul[i]));
+          ctx.moveTo(0+scalex*i,posch1+bh/2 -scalech1y*(outputregul[i]));
+          ctx.stroke();
         };
+     };   
     ctx.stroke(); 
+    
+    // Dessin Courbe Consigne 
+ 
+  ctx.beginPath();   
+  ctx.moveTo(0, bh/2);
+  for(var i=1 ; i < bw-1; i++){
+    ctx.lineWidth = 1;
+    ctx.strokeStyle ="rgb(255, 0,0)";
+    /*
+    ctx.lineTo(0+2*i*scalex,bh/2 -consigne*scalech1y);
+    ctx.moveTo(0+2*i*scalex,bh/2 -consigne*scalech1y);
+    */
+    ctx.lineTo(0+scalex*i,bh/2 -scalech1y*(setPoints[i]));
+    ctx.moveTo(0+scalex*i,bh/2 -scalech1y*(setPoints[i]));
+    ctx.stroke();
+  };
+  ctx.stroke();  
+
+    
     };
-  
   
 
   
