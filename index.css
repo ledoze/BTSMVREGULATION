@@ -7,7 +7,7 @@ main {
   padding: 2rem;
 }
 .grid {
-//  max-width: 96vw; /* Limite la largeur à 96 % de la largeur de la zone d'affichage (« viewport » en anglais) */
+/*  max-width: 96vw;  Limite la largeur à 96 % de la largeur de la zone d'affichage (« viewport » en anglais) */
   margin: 0 auto; /* Centre horizontalement le conteneur */
  background-color: #F0EEE9;
 }
@@ -51,7 +51,7 @@ color:rgb(255 255 255 / 100%);
   /*border: 5px solid rgb(255 0 255);*/
   /*border-radius: 0.5em;*/
   /*font: 1.2em sans-serif;*/
-  height:400px;
+  height:600px;
   color: blue;
   /*background-color: #add8e6;*/
   display: flex;  
@@ -144,6 +144,33 @@ background-color: #04AA6D;/* green */
 
 .button4 {
 border: 2px solid rgb(173,216,230);
+border-radius: 0.5em; 
+background-color: white;
+color:rgb(0 191 255);
+}
+
+.ch1 {
+border: 2px solid rgb(173,216,230);
+border-radius: 0.5em; 
+background-color:white; 
+color:rgb(218 165 32);
+}
+
+.ch2 {
+border: 2px solid rgb(173,216,230);
+border-radius: 0.5em; 
+background-color: white;
+color:rgb(0 0 255);
+} 
+
+.math {
+border: 2px solid rgb(173,216,230);
+border-radius: 0.5em; 
+background-color: white;
+color:rgb(255 0 0);
+} 
+
+.labelscope {
 border-radius: 0.5em; 
 background-color: white;
 color:rgb(0 191 255);
