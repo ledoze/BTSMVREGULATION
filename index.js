@@ -500,8 +500,8 @@ ch1fft.addEventListener("click", () => {
         for (let i = 0; i < frameCount; i++) {
           // Math.random() is in [0; 1.0]
           // audio needs to be in [-1.0; 1.0]
-          //nowBuffering[i] = Math.random() * 2 - 1;
-          nowBuffering[i] = outputregul[i];
+          nowBuffering[i] = Math.random() * 2 - 1;
+          //nowBuffering[i] = outputregul[i];
         }
       }
 
