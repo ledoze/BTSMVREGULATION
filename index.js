@@ -3,13 +3,6 @@
 /*
 if(x == y){
     alert('x et y contiennent la même valeur');
-}
-
-if FLAG_PERTURB_PLUS == True:
-            Gs=Gs*1.1
-        if FLAG_PERTURB_MOINS == True:
-            Gs=Gs*0.9
-
 */
 // WebSocket support
 var targetUrl = `ws://${location.host}/ws`;
@@ -26,6 +19,11 @@ var outputregul=[];
 var lastTime ;
 const canvasdim = document.getElementById("canvas");
 var nmax = canvasdim.width;
+
+var contexteAudio = new (window.AudioContext || window.webkitAudioContext)();
+var analyseur = contexteAudio.createAnalyser();
+analyseur.fftSize = 256;
+
 
 function onLoad() {
   initializeSocket();
@@ -82,6 +80,8 @@ function sendMessage(message) {
   /*print("lign318 send message = ",message);*/
   //console.log("lign265 send message = ",message);  
 };
+var ch1moy =0.0;
+var ch2moy =0.0;
 var posch2=0.0;
 var posch1=0.0;
 var posx = 0.0;
@@ -103,6 +103,8 @@ var flagperturbplus = true;
 var flagperturbmoins = true;
 var flagch1gnd  = true;
 var flagch2gnd  = true;
+var flagch1dc = true;
+var flagch2dc = true;
 var messages = "mes warnings ";
 var now = new Date();
 var bf = document.querySelector("#button-bf");
@@ -140,6 +142,12 @@ var ch2posplus = document.querySelector("#button-ch2posplus");
 var ch2posmoins = document.querySelector("#button-ch2posmoins");
 var ch1gnd = document.querySelector("#button-ch1gnd");
 var ch2gnd = document.querySelector("#button-ch2gnd");
+var ch1dc = document.querySelector("#button-ch1dc");
+var ch1ac = document.querySelector("#button-ch1ac");
+var ch2dc = document.querySelector("#button-ch2dc");
+var ch2ac = document.querySelector("#button-ch2ac");
+var ch1fft= document.querySelector("#button-ch1fft");
+var ch2fft= document.querySelector("#button-ch2fft");
 
 var sortie=0.0;
 var scalech1y= 1;
@@ -399,6 +407,130 @@ ch1gnd.addEventListener("click", () => {
 ch2gnd.addEventListener("click", () => { 
   flagch2gnd = !flagch2gnd;
 });
+
+ch1dc.addEventListener("click", () => { 
+  flagch1dc = !flagch1dc;
+  
+  if (flagch1dc!=true){
+    ch1dc.style.color="yellow";
+    ch1ac.style.color="goldenrod";
+    
+  ch1moy=eval(outputregul.join('+'))/(outputregul.length);
+  }
+  else{
+  
+  ch1dc.style.color="goldenrod";
+  ch1ac.style.color="yellow";
+  ch1moy=0;
+  };
+  
+});
+
+ch2dc.addEventListener("click", () => {
+
+  flagch2dc = !flagch2dc;
+  if (flagch2dc!=true){
+    ch2dc.style.color="lightblue";
+    ch2ac.style.color="blue";
+    
+  ch2moy=eval(mesuressimul.join('+'))/(mesuressimul.length);
+  }
+  else{
+  
+  ch2dc.style.color="blue";
+  ch2ac.style.color="lightblue";
+  ch2moy=0;
+  };
+});
+
+ch1ac.addEventListener("click", () => { 
+  flagch1dc = !flagch1dc;
+  if (flagch1dc!=true){
+    ch1ac.style.color="yellow";
+    ch1dc.style.color="goldenrod";
+  }
+  else{
+  
+    ch1dc.style.color="yellow";
+    ch1ac.style.color="goldenrod";
+    ch1moy=0;
+  };
+});
+
+ch2ac.addEventListener("click", () => { 
+  flagch2dc = !flagch2dc;
+  if (flagch2dc!=true){
+    ch2ac.style.color="lightblue";
+    ch2dc.style.color="blue";
+    
+/*  ch2moy=eval(mesuressimul.join('+'))/(mesuressimul.length); */
+  }
+  else{
+  
+    ch2dc.style.color="lightblue";
+    ch2ac.style.color="blue";
+    ch2moy=0;
+  };
+})
+ch1fft.addEventListener("click", () => { 
+      if (!audioCtx) {
+        init();
+      }
+
+      // Create an empty two second stereo buffer at the
+      // sample rate of the AudioContext
+      const frameCount = audioCtx.sampleRate * 2.0;
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      const bufferLength = analyser.frequencyBinCount;
+      console.log("486 buffer",bufferLength);
+      const dataArray = new Uint8Array(bufferLength);
+
+      const buffer = new AudioBuffer({
+        numberOfChannels: channels,
+        length: frameCount,
+        sampleRate: audioCtx.sampleRate,
+      });
+
+      // Fill the buffer with white noise;
+      // just random values between -1.0 and 1.0
+      for (let channel = 0; channel < channels; channel++) {
+        // This gives us the actual array that contains the data
+        const nowBuffering = buffer.getChannelData(channel);
+        for (let i = 0; i < frameCount; i++) {
+          // Math.random() is in [0; 1.0]
+          // audio needs to be in [-1.0; 1.0]
+          //nowBuffering[i] = Math.random() * 2 - 1;
+          nowBuffering[i] = outputregul[i];
+        }
+      }
+
+      // Get an AudioBufferSourceNode.
+      // This is the AudioNode to use when we want to play an AudioBuffer
+      const source = audioCtx.createBufferSource();
+      // Set the buffer in the AudioBufferSourceNode
+      source.buffer = buffer;
+      // Connect the AudioBufferSourceNode to the
+      // destination so we can hear the sound
+      source.connect(audioCtx.destination);
+      // start the source playing
+      source.start();
+
+      source.onended = () => {
+        console.log("White noise finished.");
+      };
+  console.log("516 fftch1");
+  alert("517 fft");
+});
+
+
+let audioCtx;
+// Stereo
+let channels = 2;
+function init() {
+   audioCtx = new AudioContext();
+};
+
 
 /* ######################FIN surveillance click###############*/
 
@@ -856,10 +988,11 @@ function clock(time) {
         }
         else{
         ctx.beginPath();
-        for(var i=1 ; i < bw-1; i++){        
+        
+        for(var i=1 ; i < bw-1; i++){         
           ctx.strokeStyle ="rgb(0, 0, 255)";
-          ctx.lineTo(0+scalex*i,posch2+bh/2 -scalech2y*(mesuressimul[i]));
-          ctx.moveTo(0+scalex*i,posch2+bh/2 -scalech2y*(mesuressimul[i]));
+          ctx.lineTo(0+scalex*i,ch2moy+posch2+bh/2 -scalech2y*(mesuressimul[i]));
+          ctx.moveTo(0+scalex*i,ch2moy+posch2+bh/2 -scalech2y*(mesuressimul[i]));
         };  
     };
     ctx.stroke();
@@ -875,8 +1008,8 @@ function clock(time) {
         ctx.beginPath();
         for(var i=1 ; i < bw-1; i++){
           ctx.strokeStyle ="#DAA520";
-          ctx.lineTo(0+scalex*i,posch1+bh/2 -scalech1y*(outputregul[i]));
-          ctx.moveTo(0+scalex*i,posch1+bh/2 -scalech1y*(outputregul[i]));
+          ctx.lineTo(0+scalex*i,ch1moy+posch1+bh/2 -scalech1y*(outputregul[i]));
+          ctx.moveTo(0+scalex*i,ch1moy+posch1+bh/2 -scalech1y*(outputregul[i]));
           ctx.stroke();
         };
      };   
