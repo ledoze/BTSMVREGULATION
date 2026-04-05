@@ -172,7 +172,7 @@ color:rgb(255 0 0);
 
 .labelscope {
 border-radius: 0.5em; 
-background-color: white;
+background-color: #F0EEE9;
 color:rgb(0 191 255);
 } 
 
@@ -200,6 +200,30 @@ font: 1.2em sans-serif;
 border-radius: 0.5em;*/
 text-align: center;
 }
+
+.centrebleu{
+color:rgb(0 0 255);
+ align-content:center;
+/*margin:40px;*/
+font: 1.2em sans-serif;
+/*border: 2px solid rgb(255 0 );
+border-radius: 0.5em;*/
+text-align: center;
+}
+
+.textleftbleu{
+color:rgb(0 0 255);
+margin-top:60px;
+font: 1.2em sans-serif;
+border: 2px solid rgb(255 255 255);
+border-radius: 0.5em;
+text-align: left;
+}
+.bleue{
+color:rgb(0 0 255);
+
+}
+
 /*
 
 */
