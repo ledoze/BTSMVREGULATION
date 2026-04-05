@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>BTSMV RÉGULATION 2022:V1.2</title>
-    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="/static/index.css" />
   </head>
   <body>
       <main class="grid"> 
@@ -46,16 +46,17 @@
                          <div>
                              <canvas id="canvas" class="scope" width="600px" height="400px"></canvas>
                          </div>
-                    </div>                    
-                    <div class="afficheprocess">
-                      <label for="text-mesure" class="centre" >Mesure</label>                    
-                      <input type="text" id="text-mesure" class="textleft" name="mesure" cols="2" rows="1" style="color: #0000FF;"/>                    
-                      <label for="slider-gs">GainStatique</label>  
+                    </div>
+                    
+                 
+                    <div class="boutonscope">
+                      <label for="text-mesure" class="centrebleu" >Mesure</label>                    
+                      <input type="text" id="text-mesure" class="textleftbleu" name="mesure" cols="2" rows="1" style="color: #0000FF;"/>                    
+                      <label for="slider-gs" class="bleue">GainStatique</label>  
                       <input style="accent-color: blue" type="range" id="slider-gs" name="slidergs" min="0"max="100" value="1" step="1" />                      
-                      <label for="slider-tau">CstTemps</label>                       
+                      <label for="slider-tau" class="bleue">CstTemps</label>                       
                       <input style="accent-color: blue" type="range" id="slider-tau" name="slidertau" min="0"max="10" value="2" step="1" />  
-                      <button id="button-bo" class="button2" name="bo">BOUCLE-OUVERTE</button>                      
-                      <div class="boutonscope">
+                      <button id="button-bo" class="button2" name="bo">BOUCLE-OUVERTE</button>                  
                         <div>
                         <button id="button-simul" class="button4" name="simul">SIMULATION</button>
                         <button id="button-acquisition" class="button4" name="acquisition">ACQUISITION</button> 
@@ -80,20 +81,7 @@
                         <button id="button-ch2dc" class="ch2" name="ch2DC">DC</button>
                         <button id="button-ch2ac" class="ch2" name="ch2AC">AC</button>
                         <button id="button-ch2gnd" class="ch2" name="ch2GND">GND</button>
-                        </div>
-                     <!--
-                      <label  class="button4" >V/Div</label> 
-                         <div>
-                        <button id="button-ch1plus" class="ch1" name="ch1plus">CH1 +</button> 
-                        <button id="button-ch1moins" class="ch1" name="ch1timemoins">CH1 -</button> 
-                        </div>
-                        
-                        <label  class="labelscope" >position</label>
-                        <div>
-                        <button id="button-ch2plus" class="button4" name="ch2plus">CH2 +</button> 
-                        <button id="button-ch2moins" class="button4" name="ch2moins">CH2 -</button> 
-                        </div>
-                      -->
+                        </div>                     
                         <div>
                         <label  class="labelscope" >POS</label>
                         <button id="button-ch1posplus" class="ch1" name="ch1posplus">CH1 &#8607;</button> 
@@ -109,7 +97,8 @@
                         <!-- -->
                         <div>
                         <label  class="labelscope" >MATHS</label>
-                        <button id="button-ch1moinsch2" class="math" name="ch1moinsch2">CH1-CH2</button> 
+                        <button id="button-ch1moinsch2" class="math" name="ch1moinsch2">CH1-CH2</button>
+                        <button id="button-ch2moinsch1" class="math" name="ch2moinsch1">CH2-CH1</button>
                         <button id="button-ch1plusch2" class="math" name="ch1plusch2">CH1+CH2</button>                        
                         </div>
                         <div>
@@ -121,13 +110,12 @@
                         <div>
                         <button id="button-save" class="button4"  name="save">SAVE</button>  
                         </div>
-                      </div>
-                    </div>                    
+                      </div>                           
               </div>                           
           </div>         
        </div>
   </main>  
-    <script src="index.js" defer></script>
+    <script src="/static/index.js" defer></script>
     <link href="index.css" rel="stylesheet"> 
   </body>
 </html>
