@@ -33,7 +33,63 @@
                       <label for="slider-Ki">K_intégral</label>
                       <input style="accent-color: red" type="range" id="slider-Ki" name="sliderKi" min="0"max="100" value="0" step="1" />
                       <label for="slider-Kd">K_dérivée</label>
-                      <input style="accent-color: red" type="range" id="slider-Kd" name="sliderKd" min="0"max="100" value="0" step="1" />                      
+                      <input style="accent-color: red" type="range" id="slider-Kd" name="sliderKd" min="0"max="100" value="0" step="1" /> 
+                      <div>  
+                        <label for="type-select1" class="ch1">
+                        Generateur1 type
+                        <select id="type-select1" class="ch1">
+                        <option>sinus</option>
+                        <option>square</option>
+                        <option>triangle</option>
+                        <option>sawtooth</option>
+                        </select>
+                        </label>                     
+                        <button id="button-v1sin" class="ch1" name="v1sin">SINUS</button> 
+                        <button id="button-v1square" class="ch1" name="v1square">SQUARE</button>
+                        <button id="button-v1triangle" class="ch1" name="v1triangle">TRIANGLE</button>
+                        <button id="button-v1sawtooth" class="ch1" name="v1sawtooth">SAWTOOTH</button>
+                        <button id="button-v1dc" class="ch1" name="v1dc">DC</button>
+                        </div>                      
+                      <div>                     
+                        <label for="slider-amp" class="gold">V1max/V </label>  
+                        <input style="accent-color: #fffb00" type="range" id="slider-ampch1" name="slideramp" min="0"max="1" value="1" step="0.01" /> 
+                        <input type="text" id="text-v1" class="textv1" name="textv1"   style="color: #FF0000;"/>    
+                        </div> 
+                      <div>                     
+                        <label for="slider-freqch1" class="gold">F1/Hz</label>                       
+                        <input style="accent-color: #fffb00"" type="range" id="slider-freqch1" name="sliderfreq1" min="0"max="1000" value="440" step="0.1" />                        
+                        <input type="text" id="text-f1" class="textv1" name="textf1"   style="color: #FF0000;"/>    
+                        </div>
+                      <div>
+                        <button id="button-plusoffset1" class="ch1" name="v1offplus">DC +</button>
+                        <button id="button-moinsoffset1" class="ch1" name="v1offmoins">DC -</button>
+                        <input type="text" id="text-offset1" class="textv1" name="textoffset1"   style="color: #FF0000;"/>
+                        <button id="button-v1gnd" class="ch1" name="v1gnd">GND</button>
+                        </div>                      
+                      <div>                       
+                        <button id="button-v2sin" class="ch2" name="v2sin">SINUS</button> 
+                        <button id="button-v2square" class="ch2" name="v2square">SQUARE</button>
+                        <button id="button-v2triangle" class="ch2" name="v2triangle">TRIANGLE</button>
+                        <button id="button-v2sawtooth" class="ch2" name="v2sawtooth">SAWTOOTH</button>
+                        <button id="button-v2dc" class="ch2" name="v2dc">DC</button>
+                        </div> 
+                      <div>                     
+                        <label for="slider-amp2" class="bleue">V2max/V </label>  
+                        <input style="accent-color: #3b1ee2" type="range" id="slider-ampch2" name="slideramp2" min="0"max="1" value="1" step="0.01" /> 
+                        <input type="text" id="text-v2" class="textv2" name="textv2"   style="color: #FF0000;"/>    
+                        </div> 
+                      <div>                     
+                        <label for="slider-freqch2" class="bleue">F2/Hz</label>                       
+                        <input style="accent-color: #3b1ee2"" type="range" id="slider-freqch2" name="sliderfreq2" min="0"max="1000" value="440" step="0.1" />                        
+                        <input type="text" id="text-f2" class="textv2" name="textf2"   style="color: #FF0000;"/>    
+                        </div>
+                      <div>
+                        <button id="button-plusoffset2" class="ch2" name="v2offplus">DC +</button>
+                        <button id="button-moinsoffset2" class="ch2" name="v2offmoins">DC -</button>
+                        <input type="text" id="text-offset2" class="textv2" name="textoffset2"   style="color: #FF0000;"/>
+                        <button id="button-v2gnd" class="ch2" name="v2gnd">GND</button>
+                        </div>    
+                                             
                     </div>
                     <div class="vertical">
                         <div class="boutonperturb">
@@ -52,10 +108,10 @@
                     <div class="boutonscope">
                       <label for="text-mesure" class="centrebleu" >Mesure</label>                    
                       <input type="text" id="text-mesure" class="textleftbleu" name="mesure" cols="2" rows="1" style="color: #0000FF;"/>                    
-                      <label for="slider-gs" class="bleue">GainStatique</label>  
-                      <input style="accent-color: blue" type="range" id="slider-gs" name="slidergs" min="0"max="100" value="1" step="1" />                      
-                      <label for="slider-tau" class="bleue">CstTemps</label>                       
-                      <input style="accent-color: blue" type="range" id="slider-tau" name="slidertau" min="0"max="10" value="2" step="1" />  
+                      <label for="slider-gs" class="bleue">Gain Statique</label>  
+                      <input style="accent-color: blue" type="range" id="slider-gs" name="slidergs" min="0"max="100" value="10" step="1" />                      
+                      <label for="slider-tau" class="bleue">Cst Temps</label>                       
+                      <input style="accent-color: blue" type="range" id="slider-tau" name="slidertau" min="0"max="1000" value="440" step="1" />  
                       <button id="button-bo" class="button2" name="bo">BOUCLE-OUVERTE</button>                  
                         <div>
                         <button id="button-simul" class="button4" name="simul">SIMULATION</button>
@@ -91,8 +147,8 @@
                         </div>
                         <div>
                         <label  class="labelscope" >HORIZONTAL</label>
-                        <button id="button-yplus" class="button4" name="yplus">TIME +</button> 
-                        <button id="button-ymoins" class="button4" name="ymoins">TIME -</button> 
+                        <button id="button-xplus" class="button4" name="yplus">TIME +</button> 
+                        <button id="button-xmoins" class="button4" name="ymoins">TIME -</button> 
                         </div>                        
                         <!-- -->
                         <div>
@@ -115,7 +171,7 @@
           </div>         
        </div>
   </main>  
-    <script src="index.js" defer></script>
+    <script src="index2.js" defer></script>
     <link href="index.css" rel="stylesheet"> 
   </body>
 </html>
