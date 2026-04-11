@@ -62,7 +62,7 @@ color:rgb(255 255 255 / 100%);
 .afficheconsigne {
   /*border: 5px solid rgb(0 125 125);*/
  /* border-radius: 0.5em; */ 
- height:400px;
+ height:550px;
   color: red;
   display: flex;  
   flex-direction: column;
@@ -183,6 +183,21 @@ border: 2px solid rgb(255 255 255);
 border-radius: 0.5em;
 text-align: right;
 }
+.textv1{
+width:20px;
+font: 1.2em sans-serif;
+border: 2px solid rgb(218 165 32);
+border-radius: 0.5em;
+text-align: right;
+}
+
+.textv2{
+width:20px;
+font: 1.2em sans-serif;
+border: 2px solid rgb(35, 14, 216);
+border-radius: 0.5em;
+text-align: right;
+}
 
 .textleft{
 margin-top:60px;
@@ -221,6 +236,11 @@ text-align: left;
 }
 .bleue{
 color:rgb(0 0 255);
+
+}
+
+.gold{
+color:rgb(218 165 32);
 
 }
 
