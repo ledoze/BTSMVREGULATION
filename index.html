@@ -38,17 +38,15 @@
                         <label for="type-select1" class="ch1">
                         Generateur1 type
                         <select id="type-select1" class="ch1">
-                        <option>sinus</option>
+                        <option>sine</option>
                         <option>square</option>
                         <option>triangle</option>
                         <option>sawtooth</option>
+                        <option>DC</option>
                         </select>
                         </label>                     
                         <button id="button-v1sin" class="ch1" name="v1sin">SINUS</button> 
-                        <button id="button-v1square" class="ch1" name="v1square">SQUARE</button>
-                        <button id="button-v1triangle" class="ch1" name="v1triangle">TRIANGLE</button>
-                        <button id="button-v1sawtooth" class="ch1" name="v1sawtooth">SAWTOOTH</button>
-                        <button id="button-v1dc" class="ch1" name="v1dc">DC</button>
+                        <button id="button-v1square" class="ch1" name="v1square">SQUARE</button>                       
                         </div>                      
                       <div>                     
                         <label for="slider-amp" class="gold">V1max/V </label>  
@@ -67,12 +65,18 @@
                         <button id="button-v1gnd" class="ch1" name="v1gnd">GND</button>
                         </div>                      
                       <div>                       
-                        <button id="button-v2sin" class="ch2" name="v2sin">SINUS</button> 
-                        <button id="button-v2square" class="ch2" name="v2square">SQUARE</button>
-                        <button id="button-v2triangle" class="ch2" name="v2triangle">TRIANGLE</button>
-                        <button id="button-v2sawtooth" class="ch2" name="v2sawtooth">SAWTOOTH</button>
-                        <button id="button-v2dc" class="ch2" name="v2dc">DC</button>
-                        </div> 
+                        <button data-playing="init" id="play-button1">ON</button>                  
+                        <label for="type-select2" class="ch2">
+                        Generateur2 type
+                        <select id="type-select2" class="ch2">
+                        <option>Sine</option>
+                        <option>Square</option>
+                        <option>Triangle</option>
+                        <option>Sawtooth</option>
+                        <option>DC</option>
+                        </select>
+                        </label>                         
+                        </div>                        
                       <div>                     
                         <label for="slider-amp2" class="bleue">V2max/V </label>  
                         <input style="accent-color: #3b1ee2" type="range" id="slider-ampch2" name="slideramp2" min="0"max="1" value="1" step="0.01" /> 
@@ -171,7 +175,7 @@
           </div>         
        </div>
   </main>  
-    <script src="index.js" defer></script>
+    <script src="index2.js" defer></script>
     <link href="index.css" rel="stylesheet"> 
   </body>
 </html>
