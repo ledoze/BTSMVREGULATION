@@ -76,8 +76,6 @@ var xplus = document.querySelector("#button-xplus");
 var xmoins = document.querySelector("#button-xmoins");
 var v1sin = document.querySelector("#button-v1sin");
 var v1square = document.querySelector("#button-v1square");
-var v1triangle = document.querySelector("#button-v1triangle");
-var v1sawtooth = document.querySelector("#button-v1sawtooth");
 var v1dc = document.querySelector("#button-v1dc");
 var v2sin = document.querySelector("#button-v2sin");
 var v2square = document.querySelector("#button-v2square");
@@ -86,14 +84,18 @@ var v2sawtooth = document.querySelector("#button-v2sawtooth");
 var v2dc = document.querySelector("#button-v2dc");
 
 var v1max = document.querySelector("#slider-ampch1");
+var v2max = document.querySelector("#slider-ampch2");
 var v2plus = document.querySelector("#button-v2plus");
 
 var v2moins = document.querySelector("#button-v2moins");
 var f1 = document.querySelector("#slider-freqch1");
+var f2 = document.querySelector("#slider-freqch2");
 
 var f2plus = document.querySelector("#button-f2plus");
 var f2moins = document.querySelector("#button-f2moins");
 var typeGene1 = document.getElementById("type-select1");
+var typeGene2 = document.getElementById("type-select2");
+var playButton1 = document.getElementById("play-button1");
 
 var consigne=input.value;
 var canvas = document.getElementById("canvas");
@@ -101,6 +103,7 @@ var ctx = canvas.getContext("2d");
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
 var amplitudech1=v1max.value;
+var amplitudech2=v2max.value;
 var frequence=f1.value;
 var scalech1y= 1;
 var scalech2y= 1;
@@ -108,6 +111,25 @@ var scalex= 1;
 var posch1=0.0;
 
 var setPoints=[];
+
+var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+var osc = new OscillatorNode(audioCtx, {
+  type: typeGene1.value,
+  frequency: frequence,
+});
+// Rather than creating a new oscillator for every start and stop
+// which you would do in an audio application, we are just going
+// to mute/un-mute for demo purposes - this means we need a gain node
+var gain = new GainNode(audioCtx);
+var analyser = new AnalyserNode(audioCtx, {
+  fftSize: 1024,
+  smoothingTimeConstant: 0.8,
+});
+osc.connect(gain).connect(analyser).connect(audioCtx.destination);
+var bufferLength = analyser.frequencyBinCount;
+var dataArray = new Uint8Array(bufferLength);
+analyser.getByteTimeDomainData(dataArray);
 
 //LISTENERS
 
@@ -117,31 +139,28 @@ var setPoints=[];
   console.log("69 amplitudech1",amplitudech1)
 });
 */
-v1square.addEventListener("click", () => {  
-  generateur();
-});
 
-v2sin.addEventListener("click", () => {  
-  generateur2();
-});
+
+
 
 typeGene1.addEventListener("change", () => {
-  oscillator2.type = typeGene1.value;
+  console.log("152 osc type",osc.type);
+  osc.type = typeGene1.value;
+  console.log("154 osc type",osc.type);
+});
+
+typeGene2.addEventListener("change", () => { 
 });
 
 f1.addEventListener("click", () => {  
   frequence=f1.value;;
-  oscillator.frequency.value=frequence;
+  osc.frequency.value=frequence;
   console.log("78 frequence",frequence)
 });
 
 
-ch1fft.addEventListener("click", () => {
-   son(); 
-});
-ch2fft.addEventListener("click", () => {
-   generateur(); 
-});
+
+
 
 ch1axexplus.addEventListener("click", () => {  
   scalech1y=scalech1y*2;  
@@ -158,7 +177,7 @@ ch2axexplus.addEventListener("click", () => {
 ch2axexmoins.addEventListener("click", () => { 
   scalech2y=scalech2y/2;
 });
-
+f1.valueAsNumber
 ch1posplus.addEventListener("click", () => {
   posch1-=10;
 });
@@ -166,6 +185,8 @@ ch1posplus.addEventListener("click", () => {
 ch1posmoins.addEventListener("click", () => {
   posch1+=10;
 });
+
+
 
 ch2posplus.addEventListener("click", () => {
   posch2-=10;
@@ -259,55 +280,54 @@ xmoins.addEventListener("click", () => {
 });
 
 //surveillance GENE
+playButton1.addEventListener("click", () => {
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  if (playButton1.dataset.playing === "init") {
+    osc.start(audioCtx.currentTime);
+    playButton1.dataset.playing = "true";
+    playButton1.innerText = "OFF";
+  } else if (playButton1.dataset.playing === "false") {
+    gain.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 0.2);
+    playButton1.dataset.playing = "true";
+    playButton1.innerText = "OFF";
+  } else if (playButton1.dataset.playing === "true") {
+    gain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
+    playButton1.dataset.playing = "false";
+    playButton1.innerText = "ON";
+  }
+});
 
 v1max.addEventListener("click", () => {
   amplitudech1=v1max.value;
   gain.gain.value=amplitudech1/100;
-  console.log("69 amplitudech1",amplitudech1)
+  console.log("283 amplitudech1",amplitudech1)
+});
+
+v2max.addEventListener("click", () => {
+  amplitudech2=v2max.value;
+  gain2.gain.value=amplitudech2/100;
+  console.log("289 amplitudech2",amplitudech2)
 });
 
 // to play 1 second we need array of 44100 numbers
 const sampleRate = 44100;
 
 
-var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-var analyseur = audioCtx.createAnalyser();
-var analyseur2 = audioCtx.createAnalyser();
-var oscillator = audioCtx.createOscillator();
-var oscillator2 = audioCtx.createOscillator();
-var gain =audioCtx.createGain();
-var gain2 =audioCtx.createGain();
+// var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+// var analyseur = audioCtx.createAnalyser();
+// var analyseur2 = audioCtx.createAnalyser();
+// var oscillator = audioCtx.createOscillator();
+// var oscillator2 = audioCtx.createOscillator();
+// var gain =audioCtx.createGain();
+// var gain2 =audioCtx.createGain();
 
-analyseur.fftSize = 2048;
-analyseur2.fftSize = 2048;
-var tailleMemoireTampon = analyseur.frequencyBinCount;
-var nombreCanaux = 2;
-// Crée une mémoire tampon vide de 2 secondes
-// à la fréquence d'échantillonage du contexte AudioContext
-var nombreFrames = audioCtx.sampleRate * 2.0;
-var tableauDonnees = audioCtx.createBuffer(
-  nombreCanaux,
-  nombreFrames,
-  audioCtx.sampleRate,
-);
-var monArray = new Uint8Array();
-var bufferLength = analyseur2.frequencyBinCount;
-var dataArray = new Uint8Array(bufferLength);
-console.log("115 bufferLength",bufferLength);
- for (let i = 0; i < tableauDonnees.length; i++) {
-    // Math.random() is in [0; 1.0]
-    // audio needs to be in [-1.0; 1.0]
-    tableauDonnees[i] = amplitudech1*Math.sin(i * Math.PI * 8 / f1.value);
-    monArray[i] = amplitudech1*Math.sin(i * Math.PI * 8 /f1.value);
 
-  }
-//console.log("100 tableauDonnees",tableauDonnees);
 
-//var monbuffer = audioCtx.decodeAudioData(tableauDonnees);
-//analyseur.getByteTimeDomainData(monbuffer);
-analyseur.getByteTimeDomainData(monArray);
+analyser.getByteTimeDomainData(dataArray);
 
-console.log("83 analyseur",analyseur);
+console.log("353 analyser",analyser);
 
 
 function compute(time) {
@@ -317,7 +337,7 @@ function compute(time) {
         const sp= setPoints.shift();
     };
     setPoints.push(consigne);
-    analyseur2.getByteTimeDomainData(dataArray);
+    analyser.getByteTimeDomainData(dataArray);
     for (let i = 0; i < tableauDonnees.length; i++) {
         // Math.random() is in [0; 1.0]
         // audio needs to be in [-1.0; 1.0]
@@ -326,110 +346,81 @@ function compute(time) {
     }
 };
 
-const source = audioCtx.createBufferSource();
-      // Set the buffer in the AudioBufferSourceNode
-      source.buffer = tableauDonnees;
 
-function generateur(){ 
-    gain.gain.value=amplitudech1/500;         
-    oscillator.connect(audioCtx.destination);
-    oscillator.connect(analyseur);
-    console.log ("142 oscillator",oscillator);
-    console.log ("142 analyseur2",analyseur);
-    oscillator.type = "square";
-    oscillator.frequency.value = 440; // valeur en hertz
-    
-    oscillator.connect(gain);
-    gain.connect(audioCtx.destination);
-    analyseur.connect(audioCtx.destination);
-    oscillator.start();
-};
 
-function generateur2(){ 
-    gain2.gain.value=amplitudech1/500;         
-    oscillator2.connect(audioCtx.destination);
-    oscillator2.connect(analyseur2);
-    console.log ("142 oscillator",oscillator2);
-    console.log ("142 analyseur2",analyseur2);
-    oscillator2.type = "sinus";
-    oscillator2.frequency.value = 440; // valeur en hertz
-    
-    oscillator2.connect(gain2);
-    gain2.connect(audioCtx.destination);
-    analyseur2.connect(audioCtx.destination);
-    oscillator2.start();
-};
+
 
 var channels=2;
 
-function son(){
- const buffer = new AudioBuffer({
-        numberOfChannels: channels,
-        length: 1024,
-        sampleRate: audioCtx.sampleRate,
-      });
+// function son(){
+//  const buffer = new AudioBuffer({
+//         numberOfChannels: channels,
+//         length: 1024,
+//         sampleRate: audioCtx.sampleRate,
+//       });
 
-      // Fill the buffer with white noise;
-      // just random values between -1.0 and 1.0
-      for (let channel = 0; channel < channels; channel++) {
-        // This gives us the actual array that contains the data
-        const nowBuffering = buffer.getChannelData(channel);
-        //for (let i = 0; i < frameCount; i++) {
-        for (let i = 0; i < 1024; i++) {
-          // Math.random() is in [0; 1.0]
-          // audio needs to be in [-1.0; 1.0]
-          nowBuffering[i] = 4*Math.sin(i*freq.value*180/(10000*Math.PI));
-          //nowBuffering[i] = donnees[i];
-        }
-      }
+//       // Fill the buffer with white noise;
+//       // just random values between -1.0 and 1.0
+//       for (let channel = 0; channel < channels; channel++) {
+//         // This gives us the actual array that contains the data
+//         const nowBuffering = buffer.getChannelData(channel);
+//         //for (let i = 0; i < frameCount; i++) {
+//         for (let i = 0; i < 1024; i++) {
+//           // Math.random() is in [0; 1.0]
+//           // audio needs to be in [-1.0; 1.0]
+//           nowBuffering[i] = 4*Math.sin(i*freq.value*180/(10000*Math.PI));
+//           //nowBuffering[i] = donnees[i];
+//         }
+//       }
 
-      // Get an AudioBufferSourceNode.
-      // This is the AudioNode to use when we want to play an AudioBuffer
-      const source = audioCtx.createBufferSource();
-      // Set the buffer in the AudioBufferSourceNode
-      source.buffer = buffer;
+//       // Get an AudioBufferSourceNode.
+//       // This is the AudioNode to use when we want to play an AudioBuffer
+//       const source = audioCtx.createBufferSource();
+//       // Set the buffer in the AudioBufferSourceNode
+//       source.buffer = buffer;
       
-     /* analyser.getByteFrequencyData(source.buffer);
+//      /* analyser.getByteFrequencyData(source.buffer);
       
-      ctxfft.fillStyle = "rgb(0, 0, 0)";
-        ctxfft.fillRect(0, 0, WIDTH, HEIGHT);
+//       ctxfft.fillStyle = "rgb(0, 0, 0)";
+//         ctxfft.fillRect(0, 0, WIDTH, HEIGHT);
 
-        const barWidth = (WIDTH / bufferLengthAlt) * 2.5;
-        let yo = 0;
+//         const barWidth = (WIDTH / bufferLengthAlt) * 2.5;
+//         let yo = 0;
 
-        for (let i = 0; i < bufferLengthAlt; i++) {
-          const barHeight = dataArrayAlt[i];
+//         for (let i = 0; i < bufferLengthAlt; i++) {
+//           const barHeight = dataArrayAlt[i];
 
-          canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
-          canvasCtx.fillRect(
-            yo,
-            HEIGHT - barHeight / 2,
-            barWidth,
-            barHeight / 2
-          );
+//           canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
+//           canvasCtx.fillRect(
+//             yo,
+//             HEIGHT - barHeight / 2,
+//             barWidth,
+//             barHeight / 2
+//           );
 
-          yo += barWidth + 1;
-        }
-      };
+//           yo += barWidth + 1;
+//         }
+//       };
 
-     */
-      // Connect the AudioBufferSourceNode to the
-      // destination so we can hear the sound
-      source.connect(audioCtx.destination);
-      // start the source playing
-      source.start();
+//      */
+//       // Connect the AudioBufferSourceNode to the
+//       // destination so we can hear the sound
+//       source.connect(audioCtx.destination);
+//       // start the source playing
+//       source.start();
 
-      source.onended = () => {
-        console.log("White noise finished.");
-      };
-};
+//       source.onended = () => {
+//         console.log("White noise finished.");
+//       };
+// };
 
 function clock(time) {
   consigne=input.value;
-  compute();
-    //analyseur.getByteTimeDomainData(oscillator);
-    analyseur.getByteTimeDomainData(monArray);
-    //analyseur2.getByteTimeDomainData(dataArray); 
+  //compute();
+  //console.log("447 dataarray",dataArray);
+    analyser.getByteTimeDomainData(dataArray);
+    //analyseur.getByteTimeDomainDanalyseur1.fftSize = 2048;
+
   ctx.fillStyle = "rgb(200 200 200)";
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
@@ -462,9 +453,7 @@ const sliceWidth = (WIDTH * scalex) / bufferLength;
   ctx.beginPath();
   for (let i = 0; i < bufferLength; i++) {
     const v = dataArray[i] / 128.0;
-    const y = (v * HEIGHT)*v1max.value / 2;
-    //consigne=input.value;
-    //setPoints.push(consigne);
+    const y = (v * HEIGHT)*v1max.value / 2;   
 
     if (i === 0) {
       ctx.moveTo(x, posch1+(HEIGHT/2-y)*scalech1y);
