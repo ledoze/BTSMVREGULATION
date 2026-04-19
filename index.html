@@ -50,12 +50,12 @@
                       <div>                     
                         <label for="slider-amp" class="gold">V1max/V </label>  
                         <input style="accent-color: #fffb00" type="range" id="slider-ampch1" name="slideramp" min="0"max="1" value="0.5" step="0.1" /> 
-                        <input type="text" id="text-v1" class="textv1" name="textv1"   style="color: #FF0000;"/>    
+                        <input type="text" id="text-v1" class="textv1" name="textv1"   style="color: #f0ec21;"/>    
                         </div> 
                       <div>                     
                         <label for="slider-freqch1" class="gold">F1/Hz</label>                       
                         <input style="accent-color: #fffb00"" type="range" id="slider-freqch1" name="sliderfreq1" min="0"max="10000" value="100" step="1" />                        
-                        <input type="text" id="text-f1" class="textv1" name="textf1"   style="color: #FF0000;"/>    
+                        <input type="text" id="text-f1" class="textv1" name="textf1"   style="color: #f0ec21;"/>    
                         </div>
                       <div>
                         <button id="button-plusoffset1" class="ch1" name="v1offplus">DC +</button>
@@ -102,7 +102,7 @@
                              <canvas id="canvas-boucle" class="schemaboucle" width="512px" ></canvas>
                          </div>                      
                          <div>
-                             <canvas id="canvas" class="scope" width="512px" height="400px"></canvas>
+                             <canvas id="canvas" class="scope" width="512px" height="512px"></canvas>
                          </div>
                     </div>
                     
@@ -142,7 +142,7 @@
                         </div>                     
                         <div>
                         <label  class="labelscope" >POS</label>
-                        <button id="button-ch1posplus" class="ch1" name="ch1posplus">CH1 &#8607;</button> 
+                        <button id="button-ch1posplus" class="ch1" name="ch1posplus">CH1 &#8607</button> 
                         <button id="button-ch1posmoins" class="ch1" name="ch1posmoins">CH1 &#8609</button>
                         <button id="button-ch2posplus" class="ch2" name="ch2posplus">CH2 &#8607</button> 
                         <button id="button-ch2posmoins" class="ch2" name="ch2posmoins">CH2 &#8609</button> 
@@ -151,7 +151,15 @@
                         <label  class="labelscope" >HORIZONTAL</label>
                         <button id="button-xplus" class="button4" name="yplus">TIME +</button> 
                         <button id="button-xmoins" class="button4" name="ymoins">TIME -</button> 
-                        </div>                        
+                        </div>   
+                        <div>
+                        <label  class="labelscope" >TRIGGER</label>
+                        <button id="button-trigch1" class="ch1" name="trigch1">CH1</button> 
+                        <button id="button-trigch2" class="ch2" name="trigch2">CH2</button> 
+                        <button id="button-trigchplus" class="button4" name="trigplusch"> &#8607</button> 
+                        <button id="button-trigchmoins" class="button4" name="trigchmoins"> &#8609</button> 
+                        </div>        
+                        
                         <!-- -->
                         <div>
                         <label  class="labelscope" >MATHS</label>
@@ -164,6 +172,9 @@
                         <button id="button-ch1fft" class="math" name="ch1fft">FFT CH1</button>
                         <button id="button-ch2fft" class="math" name="ch2fft">FFT CH2</button>
                         </div>
+                        <div>
+                        <input type="text" id="text-v1moy" class="textv1" name="textv1moy"   style="color: #f0ec21;"/>
+                        </div>
                         <!-- -->
                         <div>
                         <button id="button-save" class="button4"  name="save">SAVE</button>  
@@ -173,7 +184,7 @@
           </div>         
        </div>
   </main>  
-    <script src="index.js" defer></script>
+    <script src="index2.js" defer></script>
     <link href="index.css" rel="stylesheet"> 
   </body>
 </html>
