@@ -184,8 +184,8 @@ border-radius: 0.5em;
 text-align: right;
 }
 .textv1{
-width:20px;
-font: 1.2em sans-serif;
+width:40px;
+font: 0.8em sans-serif;
 border: 2px solid rgb(218 165 32);
 border-radius: 0.5em;
 text-align: right;
@@ -243,7 +243,7 @@ color:rgb(0 0 255);
 color:rgb(218 165 32);
 
 }
- 
+
 /*
 
 */
