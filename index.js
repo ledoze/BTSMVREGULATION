@@ -95,7 +95,10 @@ var typeGene2 = document.getElementById("type-select2");
 var playButton1 = document.getElementById("play-button1");
 var playButton2 = document.getElementById("play-button2");
 var ch1fft = document.getElementById("button-ch1fft");
-var v1moy= document.getElementById("text-v1");
+var textv1max= document.getElementById("text-v1");
+var v1moy= document.getElementById("text-v1moy");
+var trigch1= document.getElementById("button-trigch1");
+var trigch2= document.getElementById("button-trigch2");
 var autoset1= document.getElementById("button-autoset1");
 
 var consigne=input.value;
@@ -123,6 +126,8 @@ var flagch1dc = true;
 var flagch2dc = true;
 var flagch1fft = true;
 var flagautoset1 = true;
+var flagtrigch1 = true;
+var flagtrigch2 = true;
 var messages = "mes warnings ";
 var now = new Date();
 
@@ -155,24 +160,38 @@ var analyserfft = new AnalyserNode(audioCtx, {
   fftSize: 2048,  
   smoothingTimeConstant: 0.8,
 });
+
+var analyserfft2 = new AnalyserNode(audioCtx, {
+  fftSize: 2048,  
+  smoothingTimeConstant: 0.8,
+});
 analyserfft.maxDecibels = -10;
 analyserfft.minDecibels = -40;
 analyserfft.smoothingTimeConstant = 0.85;
+analyserfft2.maxDecibels = -10;
+analyserfft2.minDecibels = -40;
+analyserfft2.smoothingTimeConstant = 0.85;
 osc.connect(gain).connect(analyser).connect(audioCtx.destination);
 osc2.connect(gain2).connect(analyser2).connect(audioCtx.destination);
 osc.connect(gain).connect(analyserfft);
+osc2.connect(gain2).connect(analyserfft2);
 var bufferLength = analyser.frequencyBinCount;
 console.log("163 bufferlenght",bufferLength);
 var bufferLength2 = analyser2.frequencyBinCount;
 var bufferLengthFft = analyserfft.frequencyBinCount;
+var bufferLengthFft2 = analyserfft2.frequencyBinCount;
 var dataArray = new Uint8Array(bufferLength);
 var dataArray2 = new Uint8Array(bufferLength2);
 var dataCh1 = Array.from(dataArray);
+var dataCh2 = Array.from(dataArray2);
 var dataFft1 = new Uint8Array(bufferLengthFft);
+var dataFft2 = new Uint8Array(bufferLengthFft2);
 var tampon1=[];
+var tampon2=[];
 analyser.getByteTimeDomainData(dataArray);
 analyser2.getByteTimeDomainData(dataArray2);
 analyserfft.getByteFrequencyData(dataFft1);
+analyserfft2.getByteFrequencyData(dataFft2);
 
 //LISTENERS
 
@@ -182,9 +201,38 @@ analyserfft.getByteFrequencyData(dataFft1);
   console.log("69 amplitudech1",amplitudech1)
 });
 */
+trigch1.addEventListener("click", () => {
+  console.log("205 flagtrigch1",flagtrigch1); 
+  flagtrigch1 =! flagtrigch1;
+  if(flagtrigch1 !=true){
+    trigch1.style.color="yellow";
+    trigch1.style.color="goldenrod";
+  }
+  else{  
+  trigch1.style.color="goldenrod";
+  trigch1.style.color="yellow";  
+  };
+  flagtrigch2 =! flagtrigch1;
+  console.log("215 flagtrigch1",flagtrigch1);
+});
+
+trigch2.addEventListener("click", () => { 
+  flagtrigch2=!flagtrigch2;
+  if (flagtrigch2!=true){
+    trigch2.style.color="lightblue";
+    trigch2.style.color="blue";   
+  }
+  else{  
+  trigch2.style.color="blue";
+  trigch2.style.color="lightblue";  
+  };
+  flagtrigch1 =! flagtrigch2;
+  console.log("229 flagtrigch2",flagtrigch2);
+});
+
 autoset1.addEventListener("click", () => { 
   flagautoset1=!flagautoset1;
-  console.log("188 flagautoset1",flagautoset1);
+  console.log("234 flagautoset1",flagautoset1);
 });
 
 
@@ -414,6 +462,7 @@ v1max.addEventListener("click", () => {
   amplitudech1=v1max.value;
   gain.gain.value=amplitudech1;
   console.log("283 amplitudech1",amplitudech1)
+  textv1max.value =10*gain.gain.value;
 });
 
 v2max.addEventListener("click", () => {
@@ -424,17 +473,10 @@ v2max.addEventListener("click", () => {
 
 // to play 1 second we need array of 44100 numbers
 const sampleRate = 44100;
-
-
-// var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-// var analyseur = audioCtx.createAnalyser();
-// var analyseur2 = audioCtx.createAnalyser();
-// var oscillator = audioCtx.createOscillator();
-// var oscillator2 = audioCtx.createOscillator();
-// var gain =audioCtx.createGain();
-// var gain2 =audioCtx.createGain();
 analyser.getByteTimeDomainData(dataArray);
 analyser2.getByteTimeDomainData(dataArray2);
+
+//textv1max.value =10*gain.gain.value;
 
 function compute(time) {
     consigne=input.value;    
@@ -448,10 +490,11 @@ function compute(time) {
     analyserfft.getByteFrequencyData(dataFft1);
     //console.log("429 datafft1",dataFft1);
     dataCh1 = Array.from(dataArray);
+    dataCh2 = Array.from(dataArray2);
     const maxfft = Math.max(...dataFft1);
     //console.log("445 max fft",maxfft);
-    //console.log("446 index of max fft",dataFft1.indexOf(maxfft));
-    v1moy.value=eval(dataCh1.join('+'))/(dataCh1.length);  
+    //console.log("446 index of max fft",dataFft1.indexOf(maxfft));    
+    v1moy.value=eval(dataCh1.join('+'))/(dataCh1.length)*1;  
     ch1moy=eval(dataCh1.join('+'))/(dataCh1.length);
    /*
     if(dataCh1.length >WIDTH-1){
@@ -460,24 +503,22 @@ function compute(time) {
     */
     var top1=[];
     var deltaT1=0.0;
-    for (let i=0; i < dataCh1.length-1; i++){
-      //console.log("451 top e",e,"  ",dataCh1[e+1],dataCh1[e]);
+    for (let i=0; i < dataCh1.length-1; i++){      
       if( dataCh1[i] < v1moy.value && dataCh1[i+1] > v1moy.value){
         if(top1.length <3 ){
           top1.push(i);
-        console.log("460 top1",top1," ",top1.length);
+        //console.log("460 top1",top1," ",top1.length);
         };
         if(top1.length >2 ){
           deltaT1=(top1[2]-top1[1])/(dataCh1.length);
-          console.log("460 deltaT1",deltaT1);
+          //console.log("460 deltaT1",deltaT1);
         };
       };
     };
-    if(flagautoset1!=true){
-      //tampon1=dataCh1.slice(top1[1],top1[2]);
+    if(flagtrigch1!=true){      
       tampon1=dataCh1.slice(top1[0],top1[2]);
-      console.log("479 dataCh1.lenght",dataCh1.length);
-      console.log("479 tampon1.lenght",tampon1.length);
+      //console.log("479 dataCh1.lenght",dataCh1.length);
+      //console.log("479 tampon1.lenght",tampon1.length);
     }
     else{
       tampon1=dataCh1;
@@ -597,7 +638,7 @@ function clock(time) {
       ctx.lineTo(x2,posch2+ (HEIGHT/2-y)*scalech2y);
     }
 
-    x2 += sliceWidth;
+    x2 += sliceWidth*bufferLength/bufferLength2;
   };
   ctx.lineTo(WIDTH, HEIGHT / 2);
   ctx.stroke();
