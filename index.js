@@ -7,7 +7,7 @@ window.addEventListener("load", onLoad);
 
 
 function onLoad() {
-  initializeSocket();
+  //initializeSocket();
   var dim=document.documentElement.clientWidth; 
   console.log(dim);
 };
@@ -176,7 +176,7 @@ osc2.connect(gain2).connect(analyser2).connect(audioCtx.destination);
 osc.connect(gain).connect(analyserfft);
 osc2.connect(gain2).connect(analyserfft2);
 var bufferLength = analyser.frequencyBinCount;
-console.log("163 bufferlenght",bufferLength);
+console.log("179 bufferlenght",bufferLength);
 var bufferLength2 = analyser2.frequencyBinCount;
 var bufferLengthFft = analyserfft.frequencyBinCount;
 var bufferLengthFft2 = analyserfft2.frequencyBinCount;
@@ -477,14 +477,15 @@ analyser.getByteTimeDomainData(dataArray);
 analyser2.getByteTimeDomainData(dataArray2);
 
 //textv1max.value =10*gain.gain.value;
+var echellex =(1/scalex).toString();
 
 function compute(time) {
-    consigne=input.value;    
-    if(setPoints.length >WIDTH-1){
-        const sp= setPoints.shift();
-    };
-    
-    setPoints.push(consigne);
+    consigne=input.value; 
+    //setPoints.push(consigne);   
+    // if(setPoints.length >WIDTH-1){
+    //     const sp= setPoints.shift();
+    // };
+
     analyser.getByteTimeDomainData(dataArray);
     analyser2.getByteTimeDomainData(dataArray2);
     analyserfft.getByteFrequencyData(dataFft1);
@@ -496,34 +497,35 @@ function compute(time) {
     //console.log("446 index of max fft",dataFft1.indexOf(maxfft));    
     v1moy.value=eval(dataCh1.join('+'))/(dataCh1.length)*1;  
     ch1moy=eval(dataCh1.join('+'))/(dataCh1.length);
-   /*
-    if(dataCh1.length >WIDTH-1){
-        const sp= dataCh1.shift();
-    };
-    */
+   
     var top1=[];
     var deltaT1=0.0;
     for (let i=0; i < dataCh1.length-1; i++){      
-      if( dataCh1[i] < v1moy.value && dataCh1[i+1] > v1moy.value){
-        if(top1.length <3 ){
-          top1.push(i);
-        //console.log("460 top1",top1," ",top1.length);
-        };
-        if(top1.length >2 ){
-          deltaT1=(top1[2]-top1[1])/(dataCh1.length);
-          //console.log("460 deltaT1",deltaT1);
-        };
+      if( dataCh1[i] < v1moy.value && dataCh1[i+1] > v1moy.value){       
+        top1.push(i);            
       };
+       //setPoints.push(input.value); 
+    //   if(setPoints.length >WIDTH-1){
+    //     const sp= setPoints.shift();
+    // }; 
+      //console.log("522 top1.length ",top1.length);
     };
     if(flagtrigch1!=true){      
-      tampon1=dataCh1.slice(top1[0],top1[2]);
+      tampon1=dataCh1.slice(top1[1],top1[2]);
+      //tampon1=dataCh1.slice(top1[0],top1[2]);
       //console.log("479 dataCh1.lenght",dataCh1.length);
-      //console.log("479 tampon1.lenght",tampon1.length);
+      console.log("531 tampon1.lenght freq ",3*16348/tampon1.length,"Hz");
+      //echellex =(tampon1.length/(3*16348)).toString(); 
+      echellex =(scalex*tampon1.length/(3*16348)).toFixed(3);       
+      echellex=echellex.concat(" s/Div"); 
     }
     else{
       tampon1=dataCh1;
     };
-
+    setPoints.push(input.value);
+    if(setPoints.length >tampon1.length-1){
+        const sp= setPoints.shift();
+    };  
 };
 
 function drawGrid(lineWidth, cellWidth, cellHeight, color) {
@@ -588,11 +590,8 @@ function drawGrid(lineWidth, cellWidth, cellHeight, color) {
 };
 
 function clock(time) {
-  consigne=input.value;
+  //consigne=input.value;
   compute();
-  //console.log("447 dataarray",dataArray);
-  //analyser.getByteTimeDomainData(dataArray);
-  //analyser2.getByteTimeDomainData(dataArray2);
 
   // Dessin Axes
 
@@ -606,6 +605,7 @@ function clock(time) {
   let x2 = 0;
   let x3 = 0;
   let xfft = 0;
+  let xc = 0;
 
   ctx.beginPath();  
   for (let i = 0; i < bufferLength; i++) {
@@ -624,10 +624,10 @@ function clock(time) {
   ctx.stroke();
   ctx.beginPath();
   ctx.strokeStyle = "rgb(0 0 255)";
-  var echellex =(1/scalex).toString();
-  echellex=echellex.concat("S/div"); 
+  // var echellex =(1/scalex).toString();
+  // echellex=echellex.concat("S/div"); 
   
-  ctx.fillText(echellex, WIDTH-WIDTH/9, HEIGHT/2+HEIGHT/20);
+  ctx.fillText(echellex, WIDTH-WIDTH/7, HEIGHT/2+HEIGHT/20);
   for (let i = 0; i < bufferLength2; i++) {    
     const v = dataArray2[i] / 128.0;
     const y = (v * HEIGHT)*v2max.value / 2;   
@@ -646,23 +646,31 @@ function clock(time) {
  /*if(setPoints.length >WIDTH-1){
         const sp= setPoints.shift();
     };
- */   
+ */  
+if(setPoints.length >bufferLength){
+        const sp= setPoints.shift();
+    }; 
   ctx.beginPath();   
   ctx.moveTo(0, HEIGHT/2);
-  for(var i=1 ; i < bufferLength; i++){
+  for(var i=1 ; i <tampon1.length/scalex; i++){
     ctx.lineWidth = 1;
-    ctx.strokeStyle ="rgb(255, 0,0)";
-    /*
-    ctx.lineTo(0+2*i*scalex,HEIGHT/2 -consigne*scalech1y);
-    ctx.moveTo(0+2*i*scalex,HEIGHT/2 -consigne*scalech1y);
-    */
-    ctx.lineTo(0+scalex*sliceWidth*i,posch1+HEIGHT/2 -scalech1y*(setPoints[i]));
-    ctx.moveTo(0+scalex*sliceWidth*i,posch1+HEIGHT/2 -scalech1y*(setPoints[i]));
-   
+    ctx.strokeStyle ="rgb(255, 0,0)"; 
+    const v = setPoints[i] / 128.0;
+    const y = (v * HEIGHT) / 2;   
+
+      if (i === 0) {
+        ctx.moveTo(xc, posch1+(HEIGHT/2-y)*scalech1y);
+      } 
+      else {
+        ctx.lineTo(xc,posch1+ (HEIGHT/2-y)*scalech1y);
+      };
+
+      //xc += sliceWidth*bufferLength*scalex/(1*tampon1.length);
+      xc += sliceWidth*bufferLength*scalex/(1*setPoints.length);
     ctx.stroke();
-  };
- 
-  ctx.stroke();   
+  }; 
+  ctx.stroke(); 
+
   ctx.beginPath();
   ctx.lineWidth = 1;
   ctx.moveTo(0, HEIGHT/2);  
@@ -674,47 +682,33 @@ function clock(time) {
     ctx.stroke();      
   }
   else{     
-    ctx.beginPath();     
-    // for(var i=1 ; i < bufferLength/scalex-1; i++){          
-    //   ctx.strokeStyle ="#26d80fff";
-
-    //   const v = dataCh1[i] / 128.0;
-    //   const y = (v * HEIGHT) / 2;   
-
+    ctx.beginPath();   
     for(var i=1 ; i < tampon1.length/scalex; i++){          
       ctx.strokeStyle ="#26d80fff";
 
       const v = tampon1[i] / 128.0;
       const y = (v * HEIGHT) / 2;   
 
-    if (i === 0) {
-      ctx.moveTo(x3,2*ch1moy+ posch1+(HEIGHT/2-y)*scalech1y);
-    } else {
-      ctx.lineTo(x3,2*ch1moy+posch1+ (HEIGHT/2-y)*scalech1y);
-    };
+      if (i === 0) {
+        ctx.moveTo(x3,2*ch1moy+ posch1+(HEIGHT/2-y)*scalech1y);
+      } 
+      else {
+        ctx.lineTo(x3,2*ch1moy+posch1+ (HEIGHT/2-y)*scalech1y);
+      };
 
-    x3 += sliceWidth*bufferLength*scalex/(1*tampon1.length);
-  
-    
-   
-
-   
-    
-       // ctx.lineTo(0+scalex*i,ch1moy+posch2+HEIGHT/2 -scalech1y*(dataCh1[i]));
-     // ctx.moveTo(0+scalex*i,ch1moy+posch2+HEIGHT/2 -scalech1y*(dataCh1[i]));
+      x3 += sliceWidth*bufferLength*scalex/(1*tampon1.length);
     };
     ctx.stroke();  
   };
   if(flagch1fft != true){    
     const barWidth = (WIDTH / bufferLengthFft) * 5 - 1;
-    let barHeight;
-    
+    let barHeight;    
     for (let i = 0; i < bufferLengthFft; i++) {
       barHeight = dataFft1[i];
       ctx.fillStyle = `rgb(${barHeight + 100} 50 50)`;
       ctx.fillRect(xfft, HEIGHT - barHeight / 2, barWidth, barHeight / 2);
       xfft += 3*barWidth;
-    }
+    };
     ctx.stroke();
   };
   ctx.stroke();
