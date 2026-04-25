@@ -149,6 +149,12 @@ background-color: white;
 color:rgb(0 191 255);
 }
 
+.pavevertical {
+border: 2px solid rgb(173,216,230);
+border-radius: 0.5em; 
+background-color:white;
+}
+
 .ch1 {
 border: 2px solid rgb(173,216,230);
 border-radius: 0.5em; 
@@ -171,9 +177,15 @@ color:rgb(255 0 0);
 } 
 
 .labelscope {
+border: 2px solid rgb(173,216,230);
 border-radius: 0.5em; 
 background-color: #F0EEE9;
 color:rgb(0 191 255);
+display: flex;  
+  flex-direction: column;
+  justify-content: space-between;
+  align-items:center;
+  flex-wrap: wrap; 
 } 
 
 .textright{
@@ -215,6 +227,7 @@ font: 1.2em sans-serif;
 border-radius: 0.5em;*/
 text-align: center;
 }
+
 .centrebleu{
 color:rgb(0 0 255);
  align-content:center;
