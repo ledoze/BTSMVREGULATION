@@ -100,6 +100,8 @@ var v1moy= document.getElementById("text-v1moy");
 var trigch1= document.getElementById("button-trigch1");
 var trigch2= document.getElementById("button-trigch2");
 var autoset1= document.getElementById("button-autoset1");
+var pause = document.querySelector("#button-pause");
+var simul= document.querySelector("#button-simul");
 
 var consigne=input.value;
 var canvas = document.getElementById("canvas");
@@ -128,6 +130,8 @@ var flagch1fft = true;
 var flagautoset1 = true;
 var flagtrigch1 = true;
 var flagtrigch2 = true;
+var flagpause = true;
+var flagsimul = true;
 var messages = "mes warnings ";
 var now = new Date();
 
@@ -201,16 +205,42 @@ analyserfft2.getByteFrequencyData(dataFft2);
   console.log("69 amplitudech1",amplitudech1)
 });
 */
+
+simul.addEventListener("click", () => {
+  flagsimul=!flagsimul;
+  if (flagsimul!=true){
+  simul.style.color="blue";
+  simul.style.background = "linear-gradient(to right, #5b86e3ff 0%, #7a45b6ff  51%, #5b86e3ff   100%)";
+  console.log("214 flagsimul",flagsimul);
+  }
+  else{
+  simul.style.color="rgb(0 191 255)";
+  simul.style.background ="white";
+  };   
+});
+
+pause.addEventListener("click", () => {
+  flagpause=!flagpause;
+  if (flagpause!=true){
+  pause.style.color="blue";
+  pause.style.background = "linear-gradient(to right, #5b86e3ff 0%, #7a45b6ff  51%, #5b86e3ff   100%)";
+  }
+  else{
+  pause.style.color="rgb(0 191 255)";
+  pause.style.background ="white";
+  };   
+});
+
 trigch1.addEventListener("click", () => {
   console.log("205 flagtrigch1",flagtrigch1); 
   flagtrigch1 =! flagtrigch1;
   if(flagtrigch1 !=true){
-    trigch1.style.color="yellow";
-    trigch1.style.color="goldenrod";
+    trigch1.style.color="rgb(218 165 32)";
+    trigch1.style.background = "linear-gradient(to right, #e3e15bff 0%, #f3f3d6ff  51%, #e3e15bff   100%)";
   }
   else{  
-  trigch1.style.color="goldenrod";
-  trigch1.style.color="yellow";  
+  trigch1.style.color="rgb(218 165 32)";
+  trigch1.style.background ="white";;  
   };
   flagtrigch2 =! flagtrigch1;
   console.log("215 flagtrigch1",flagtrigch1);
@@ -279,8 +309,9 @@ ch1dc.addEventListener("click", () => {
   flagch1dc = !flagch1dc;
   
   if (flagch1dc!=true){
-    ch1dc.style.color="yellow";
-    ch1ac.style.color="goldenrod";
+    ch1dc.style.color="rgb(218 165 32)";
+    ch1dc.style.background = "linear-gradient(to right, #e3e15bff 0%, #f3f3d6ff  51%, #e3e15bff   100%)";
+    ch1ac.style.background ="white";; 
     
   ch1moy=eval(dataCh1.join('+'))/(dataCh1.length);
   v1moy.value=ch1moy;
@@ -288,8 +319,9 @@ ch1dc.addEventListener("click", () => {
   }
   else{
   
-  ch1dc.style.color="goldenrod";
-  ch1ac.style.color="yellow";
+  ch1dc.style.color="rgb(218 165 32)";
+  ch1dc.style.background ="white"; 
+  ch1ac.style.background = "linear-gradient(to right, #e3e15bff 0%, #f3f3d6ff  51%, #e3e15bff   100%)";
   ch1moy=0;
   };
   
@@ -314,14 +346,15 @@ ch2dc.addEventListener("click", () => {
 
 ch1ac.addEventListener("click", () => { 
   flagch1dc = !flagch1dc;
-  if (flagch1dc!=true){
-    ch1ac.style.color="yellow";
-    ch1dc.style.color="goldenrod";
+  if (flagch1dc == true){
+    ch1dc.style.color="rgb(218 165 32)";
+    ch1ac.style.background = "linear-gradient(to right, #e3e15bff 0%, #f3f3d6ff  51%, #e3e15bff   100%)";
+     
   }
   else{
-  
-    ch1dc.style.color="yellow";
-    ch1ac.style.color="goldenrod";
+    ch1ac.style.background ="white";
+    ch1dc.style.color="rgb(218 165 32)";
+    //ch1ac.style.color="goldenrod";
     ch1moy=0;
   };
 });
@@ -497,12 +530,23 @@ function compute(time) {
     //console.log("446 index of max fft",dataFft1.indexOf(maxfft));    
     v1moy.value=eval(dataCh1.join('+'))/(dataCh1.length)*1;  
     ch1moy=eval(dataCh1.join('+'))/(dataCh1.length);
-   
+    //setPoints=[];
     var top1=[];
     var deltaT1=0.0;
+    var cons =[];
+    if(flagpause == true){};
     for (let i=0; i < dataCh1.length-1; i++){      
       if( dataCh1[i] < v1moy.value && dataCh1[i+1] > v1moy.value){       
-        top1.push(i);            
+        top1.push(i);
+        cons.push(input.value); 
+        setPoints.push(input.value); 
+        if(setPoints.length > (WIDTH-1)*scalex){
+          const sp= setPoints.shift();
+        };
+        //regulation
+
+
+        
       };
        //setPoints.push(input.value); 
     //   if(setPoints.length >WIDTH-1){
@@ -516,16 +560,19 @@ function compute(time) {
       //console.log("479 dataCh1.lenght",dataCh1.length);
       console.log("531 tampon1.lenght freq ",3*16348/tampon1.length,"Hz");
       //echellex =(tampon1.length/(3*16348)).toString(); 
-      echellex =(scalex*tampon1.length/(3*16348)).toFixed(3);       
-      echellex=echellex.concat(" s/Div"); 
+      echellex =(scalex*tampon1.length/(30*16348)).toFixed(3);       
+      echellex=echellex.concat(" s/Div");
     }
     else{
-      tampon1=dataCh1;
-    };
-    setPoints.push(input.value);
-    if(setPoints.length >tampon1.length-1){
-        const sp= setPoints.shift();
-    };  
+      tampon1=dataCh1;     
+    };    
+    // if(setPoints.length < bufferLength) {
+    //   setPoints=cons;        
+    // }
+    // else{
+    //   //const sp= setPoints.shift();
+    // }; 
+    //console.log("557 stePoints",setPoints) 
 };
 
 function drawGrid(lineWidth, cellWidth, cellHeight, color) {
@@ -607,25 +654,24 @@ function clock(time) {
   let xfft = 0;
   let xc = 0;
 
-  ctx.beginPath();  
-  for (let i = 0; i < bufferLength; i++) {
-    const v = dataArray[i] / 128.0;
-    const y = (v * HEIGHT)*v1max.value / 2;   
+  // ctx.beginPath();  
+  // for (let i = 0; i < bufferLength; i++) {
+  //   const v = dataArray[i] / 128.0;
+  //   const y = (v * HEIGHT)*v1max.value / 2;   
 
-    if (i === 0) {
-      ctx.moveTo(x, posch1+(HEIGHT/2-y)*scalegene1y);
-    } else {
-      ctx.lineTo(x,posch1+ (HEIGHT/2-y)*scalegene1y);
-    }
+  //   if (i === 0) {
+  //     ctx.moveTo(x, posch1+(HEIGHT/2-y)*scalegene1y);
+  //   } else {
+  //     ctx.lineTo(x,posch1+ (HEIGHT/2-y)*scalegene1y);
+  //   }
 
-    x += sliceWidth;
-  };
-  ctx.lineTo(WIDTH, HEIGHT / 2);
-  ctx.stroke();
+  //   x += sliceWidth;
+  // };
+  // ctx.lineTo(WIDTH, HEIGHT / 2);
+  // ctx.stroke();
   ctx.beginPath();
   ctx.strokeStyle = "rgb(0 0 255)";
-  // var echellex =(1/scalex).toString();
-  // echellex=echellex.concat("S/div"); 
+  
   
   ctx.fillText(echellex, WIDTH-WIDTH/7, HEIGHT/2+HEIGHT/20);
   for (let i = 0; i < bufferLength2; i++) {    
@@ -647,12 +693,13 @@ function clock(time) {
         const sp= setPoints.shift();
     };
  */  
-if(setPoints.length >bufferLength){
-        const sp= setPoints.shift();
-    }; 
+// if(setPoints.length >bufferLength){
+//         const sp= setPoints.shift();
+//     }; 
   ctx.beginPath();   
   ctx.moveTo(0, HEIGHT/2);
-  for(var i=1 ; i <tampon1.length/scalex; i++){
+  console.log("681",setPoints.length*scalex);
+  for(var i=1 ; i < bufferLength*scalex; i++){
     ctx.lineWidth = 1;
     ctx.strokeStyle ="rgb(255, 0,0)"; 
     const v = setPoints[i] / 128.0;
@@ -665,8 +712,9 @@ if(setPoints.length >bufferLength){
         ctx.lineTo(xc,posch1+ (HEIGHT/2-y)*scalech1y);
       };
 
-      //xc += sliceWidth*bufferLength*scalex/(1*tampon1.length);
-      xc += sliceWidth*bufferLength*scalex/(1*setPoints.length);
+      //xc += sliceWidth*setPoints.length/scalex;
+      xc += (WIDTH ) / (scalex*setPoints.length);
+      //xc += sliceWidth*bufferLength/(setPoints.length*scalex);
     ctx.stroke();
   }; 
   ctx.stroke(); 
