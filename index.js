@@ -44,6 +44,8 @@ function sendMessage(message) {
   //console.log("lign265 send message = ",message);  
 };
 
+var valid = document.querySelector("#button-valider");
+var identite = document.querySelector("#text-identite");
 var input = document.querySelector("#slider-consigne");
 var consigne = input.value;
 var mesure = document.querySelector("#text-mesure");
@@ -101,9 +103,19 @@ var trigch1= document.getElementById("button-trigch1");
 var trigch2= document.getElementById("button-trigch2");
 var autoset1= document.getElementById("button-autoset1");
 var pause = document.querySelector("#button-pause");
+var debut = document.querySelector("#button-debut");
+var save = document.querySelector("#button-save");
 var simul= document.querySelector("#button-simul");
+var kp = document.querySelector("#slider-Kp");
+var ki = document.querySelector("#slider-Ki");
+var kd = document.querySelector("#slider-Kd");
+var tau1 = document.querySelector("#slider-tau");
+var gs1 = document.querySelector("#slider-gs");
+
 
 var consigne=input.value;
+var process_variable=0.0;
+var gains =gs1.value;
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 const WIDTH = canvas.width;
@@ -121,6 +133,10 @@ var posch1=0.0;
 var posch2=0.0;
 var ch1moy =0.0;
 var ch2moy =0.0;
+var mouvement = 0.0;
+var posx=0.0;
+var posy=0.0;
+var stage =0;
 var flagdebut = true;
 var flagch1gnd  = true;
 var flagch2gnd  = true;
@@ -132,11 +148,16 @@ var flagtrigch1 = true;
 var flagtrigch2 = true;
 var flagpause = true;
 var flagsimul = true;
+var flagbo = true;
+var flagperturbplus = true;
+var flagperturbmoins = true;
 var messages = "mes warnings ";
 var now = new Date();
 
 //var dataCh2=[];
 var setPoints=[];
+var outputregul=[];
+var mesuressimul=[];
 
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 var osc = new OscillatorNode(audioCtx, {
@@ -205,6 +226,46 @@ analyserfft2.getByteFrequencyData(dataFft2);
   console.log("69 amplitudech1",amplitudech1)
 });
 */
+window.addEventListener("mousemove", (e) => {  
+     //console.log(e.clientX , e.clientY ); 
+     mouvement=mouvement+Math.sqrt((posx-e.clientX)**2+(posy-e.clientY)**2);
+     posx=e.clientX;
+     posy = e.clientY;
+     //console.log("mouvement",mouvement);
+});
+valid.addEventListener("click", () => {
+    if (stage==0){
+      stage=1;
+      const instant = new Date().getTime();
+      text1=instant.toString();
+      text2=identite.value;
+      text2=text2.concat(" : ",text1);
+      messages=messages.concat(text2);
+      textData.value=messages;  
+      alert("Bravo! Modifier la consigne a 50"); 
+    };
+});
+
+save.addEventListener("click", () => {  
+  text2=mouvement.toString();
+  messages=messages.concat(text2);
+  textData.value=messages;
+  //window.alert("save");
+  downloadTextFile();
+  saveImage();
+});
+
+debut.addEventListener("click", () => {  
+  flagdebut=!flagdebut; 
+  flagpause=!flagpause;
+    if (flagdebut!=true){
+  debut.style.color="green";
+  debut.style.background = "linear-gradient(to right, #DCE35B 0%, #45B649  51%, #DCE35B  100%)";
+  }
+  else{
+  debut.style.color="red";
+  };   
+});
 
 simul.addEventListener("click", () => {
   flagsimul=!flagsimul;
@@ -504,6 +565,188 @@ v2max.addEventListener("click", () => {
   console.log("289 amplitudech2",amplitudech2)
 });
 
+
+/* ######################Debut save fichier###############*/
+function downloadTextFile() {
+            var text = document.getElementById("textData").value;
+            text=text.concat(" Souris : ",mouvement.toString());
+            text=(identite.value).concat(" : ",text);
+            var blob = new Blob([text], { type: 'text/plain' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            nom=(identite.value).concat(".txt");
+            //link.download = 'maSauvegarde.txt';
+            link.download = nom;            
+            link.click();
+        };
+function saveImage(){        
+// Convert our canvas to a data URL
+    let canvasUrl = canvas.toDataURL();
+    // Create an anchor, and set the href value to our data URL
+    const createEl = document.createElement('a');
+    createEl.href = canvasUrl;
+
+    // This is the name of our downloaded file
+    createEl.download = "save_image";
+
+    // Click the download button, causing a download, and then remove it
+    createEl.click();
+    createEl.remove();
+};
+
+        
+
+/* ######################FIN save fichiers ###############*/
+
+/* ######################Dessin schema###############*/
+function drawSchema(){
+  const canvasboucle = document.getElementById("canvas-boucle");
+  const ctxboucle = canvasboucle.getContext("2d");
+  let w = canvasboucle.width;
+  let h = canvasboucle.height;
+  ctxboucle.beginPath();
+  ctxboucle.fillStyle = '#fff';
+  ctxboucle.fillRect(0, 0, canvasboucle.width, canvasboucle.height);
+  //ctxboucle.save();
+  ctxboucle.beginPath();
+  ctxboucle.strokeStyle ="rgb(255, 0,0)";
+  ctxboucle.strokeRect(w/8, 2*h/5, w/7, h/4);
+  ctxboucle.arc(w/14,2*h/5+h/8, h/8, 0,2* Math.PI , true); // Cercle extérieur  
+  ctxboucle.moveTo(0,2*h/5+h/8);
+  ctxboucle.lineTo(w/14-h/8,2*h/5+h/8);
+  ctxboucle.stroke();
+  ctxboucle.moveTo(w/14+h/8,2*h/5+h/8);
+  ctxboucle.lineTo(w/8,2*h/5+h/8);
+  ctxboucle.stroke();
+  ctxboucle.moveTo(w/14,2*h/5+h/4);
+  ctxboucle.lineTo(w/14,2*h/5+h/2);
+  ctxboucle.lineTo(w/8+w/7-w/20,2*h/5+h/2);
+  ctxboucle.stroke();
+  ctxboucle.font = "15px Arial";
+  ctxboucle.fillStyle = "#FF0000";
+  ctxboucle.fillText("W", w/60, 2*h/5+h/16);
+  
+  ctxboucle.beginPath();
+  ctxboucle.strokeStyle ="rgb(0, 0,255)";
+  ctxboucle.strokeRect(w/8+w/7+w/15, 2*h/5, w/7, h/4);
+  ctxboucle.strokeRect(w/8+2*w/7+2*w/15, 2*h/5, w/7, h/4);
+  ctxboucle.strokeRect(w/8+3*w/7+3*w/15, 2*h/5, w/7, h/4);
+  ctxboucle.moveTo(w/8+w/7+w/15,2*h/5+h/8);
+  ctxboucle.lineTo(w/8+w/7,2*h/5+h/8);
+  ctxboucle.stroke(); 
+  ctxboucle.moveTo(w/8+3*w/7+2*w/15,2*h/5+h/8);
+  ctxboucle.lineTo(w/8+3*w/7+3*w/15,2*h/5+h/8);
+  ctxboucle.stroke();  
+  ctxboucle.moveTo(w/8+2*w/7+2*w/15,2*h/5+h/8);
+  ctxboucle.lineTo(w/8+2*w/7+w/14,2*h/5+h/8);
+  ctxboucle.stroke();
+  ctxboucle.moveTo(w/8+4*w/7+3*w/15,2*h/5+h/8);
+  ctxboucle.lineTo(w,2*h/5+h/8);
+  ctxboucle.stroke();
+  ctxboucle.moveTo(w-w/20,2*h/5+h/8);
+  ctxboucle.lineTo(w-w/20,2*h/5+h/2);
+  ctxboucle.lineTo(w/8+w/7,2*h/5+h/2);
+  ctxboucle.stroke(); 
+  ctxboucle.fillStyle = "#000099";
+  ctxboucle.font = "15px Arial";
+  ctxboucle.fillText("Actionneur", w/8+w/7+w/15+h/16, 2*h/5+3*h/16);
+  ctxboucle.fillText("System",w/8+2*w/7+2*w/15+h/16, 2*h/5+3*h/16);
+  ctxboucle.fillText("Capteur", w/8+3*w/7+3*w/15+h/16, 2*h/5+3*h/16);
+  ctxboucle.fillStyle = "#DAA520";
+  ctxboucle.fillText("CH1", w/8+w/7+w/48, 2*h/5-h/16);
+  ctxboucle.fillText("YR", w/8+w/7+w/48, 2*h/5+h/16);
+  ctxboucle.fillStyle = "#0000FF";  
+  ctxboucle.fillText("CH2", w-w/18, 2*h/5-h/16);
+  ctxboucle.fillText("M", w-w/20, 2*h/5+h/16);
+  
+  ctxboucle.beginPath();
+  ctxboucle.strokeStyle ="rgb(0, 255,0)";
+  ctxboucle.arc(w/2, h/5, h/8, 0,2* Math.PI , true);
+  ctxboucle.stroke();  
+  ctxboucle.moveTo(w/2,h/5+h/8);
+  ctxboucle.lineTo(w/2,h/6+2*h/8);
+  ctxboucle.stroke(); 
+  ctxboucle.moveTo(w/2,h/5-h/8);
+  ctxboucle.lineTo(w/2,0);
+  ctxboucle.stroke(); 
+  if(flagbo==true){
+    ctxboucle.beginPath();
+    ctxboucle.strokeStyle ="rgb(255, 0,0)";
+    ctxboucle.moveTo(w/8+w/7-w/20,2*h/5+h/3);
+    ctxboucle.lineTo(w/8+w/7,2*h/5+h/2);    
+  }
+  else{
+    ctxboucle.strokeStyle ="rgb(255, 0,0)";
+    ctxboucle.moveTo(w/8+w/7-w/20,2*h/5+h/3);
+    ctxboucle.moveTo(w/8+w/7-w/20,2*h/5+h/2);
+    ctxboucle.lineTo(w/8+w/7,2*h/5+h/2);
+  };
+  ctxboucle.stroke();
+  ctxboucle.fillStyle = "#FF0000";
+  ctxboucle.font = "25px Arial";
+  ctxboucle.fillText("+", w/14-3*h/32, 2*h/5+h/8);
+  ctxboucle.fillText("-", w/14+h/32, 2*h/5+2*h/8-h/32);  
+  ctxboucle.fillText("P  I  D", w/8+h/16, 2*h/5+3*h/16);
+  if(flagperturbplus!=true){
+  ctxboucle.fillStyle = "#009900";
+  ctxboucle.fillText("+", w/2-h/16, h/5+h/32);
+  };
+  if(flagperturbmoins!=true){
+  ctxboucle.fillStyle = "#009900";
+  ctxboucle.font = "30px Arial";
+  ctxboucle.fillText("-", w/2-h/16, h/5+h/32);
+  };
+  
+  };
+/* ######################FIN Dessin schema###############*/
+
+drawSchema();
+
+
+
+
+function processing(){
+  var consigne = input.value;
+  //var gains =gs1.value;
+  const delta= 10000;
+  if(flagbo == true ){    
+    process_variable = ( process_variable*tau1.value/(tau1.value+delta) +gains*consigne*delta/(tau1.value+delta) );
+    outputregul.push(0);
+    mesuressimul.push(parseFloat(process_variable));
+    //console.log("527 proces",process_variable)
+  }
+  else{
+    //Calcul erreur
+    var error = consigne - process_variable;
+    console.log("409 error ",error,consigne);
+    // terme Proportionel 
+    var P_out = kp.value * error;
+    console.log("411 P_out ",P_out);
+    // terme Integral 
+    integral += error * delta;
+    var I_out = ki.value * integral;            
+    // terme Derive 
+    var derivative = (error - Erreur_precedente) / delta;
+    var D_out = kd.value * derivative;            
+    // Calcul sortie totale: output
+    var sortie = P_out + I_out + D_out;           
+    if (flagsat == true){
+      if (sortie > 100 ){
+          sortie=100;
+      };                   
+      if (sortie < 0 ){
+        sortie = 0 ;
+      };
+    };                   
+    // Update Erreur_précedente
+    Erreur_precedente = error;
+    process_variable = ( process_variable*10*tau.value/(10*tau.value+delta) +gains*sortie*delta/(10*tau.value+delta) );
+    outputregul.push(sortie);
+    mesuressimul.push(parseFloat(process_variable));         
+  };
+};
+
+
 // to play 1 second we need array of 44100 numbers
 const sampleRate = 44100;
 analyser.getByteTimeDomainData(dataArray);
@@ -513,6 +756,7 @@ analyser2.getByteTimeDomainData(dataArray2);
 var echellex =(1/scalex).toString();
 
 function compute(time) {
+ // console.log("587 audioCtx.currentTime",audioCtx.currentTime);
     consigne=input.value; 
     //setPoints.push(consigne);   
     // if(setPoints.length >WIDTH-1){
@@ -534,45 +778,61 @@ function compute(time) {
     var top1=[];
     var deltaT1=0.0;
     var cons =[];
-    if(flagpause == true){};
+    var delta= 1/10;
+    if(flagpause == true){
     for (let i=0; i < dataCh1.length-1; i++){      
       if( dataCh1[i] < v1moy.value && dataCh1[i+1] > v1moy.value){       
         top1.push(i);
         cons.push(input.value); 
         setPoints.push(input.value); 
-        if(setPoints.length > (WIDTH-1)*scalex){
-          const sp= setPoints.shift();
-        };
-        //regulation
-
-
+        //processing();
         
+        
+        process_variable = ( process_variable*10*tau1.value/(10*tau1.value+delta) +gains*consigne*delta/(10*tau1.value+delta) );
+        //process_variable = ( process_variable*tau1.value/(tau1.value+delta) +gains*input.value*delta/(tau1.value+delta) );
+        outputregul.push(0);
+        mesuressimul.push(parseFloat(process_variable));
+        //console.log("606 top1.length ",top1.length,process_variable);
+        if( setPoints.length > (WIDTH-1)/scalex){
+          const sp= setPoints.shift();
+          const ms= mesuressimul.shift();          
+        };        
+        //regulation        
       };
+      //process_variable = ( process_variable*tau1.value/(tau1.value+top1.length/bufferLength) +gains*input.value*top1.length/bufferLength/(tau1.value+top1.length)/bufferLength );
+      //outputregul.push(0);
+      //mesuressimul.push(parseFloat(process_variable));
+      //console.log("613 processvariable",process_variable,tau1.value,gains,top1.length,mesuressimul.length,setPoints.length)
+      // if(mesuressimul.length > (WIDTH-1)*scalex){          
+      //     const ms =mesuressimul.shift();          
+      //   };
+      //   if(outputregul.length > (WIDTH-1)*scalex){          
+      //     const op =outputregul.shift();         
+      //   };
        //setPoints.push(input.value); 
     //   if(setPoints.length >WIDTH-1){
     //     const sp= setPoints.shift();
     // }; 
-      //console.log("522 top1.length ",top1.length);
+      //console.log("624 top1.length ",top1.length,process_variable);
     };
     if(flagtrigch1!=true){      
-      tampon1=dataCh1.slice(top1[1],top1[2]);
+      tampon1=dataCh1.slice(top1[1],top1[scalex*2]);
+      //tampon2=mesuressimul.slice(top1[1],top1[2]);
       //tampon1=dataCh1.slice(top1[0],top1[2]);
       //console.log("479 dataCh1.lenght",dataCh1.length);
-      console.log("531 tampon1.lenght freq ",3*16348/tampon1.length,"Hz");
+
+      //console.log("630 tampon1.lenght freq ",3*16348/tampon1.length,"Hz");
+
       //echellex =(tampon1.length/(3*16348)).toString(); 
       echellex =(scalex*tampon1.length/(30*16348)).toFixed(3);       
       echellex=echellex.concat(" s/Div");
     }
     else{
-      tampon1=dataCh1;     
-    };    
-    // if(setPoints.length < bufferLength) {
-    //   setPoints=cons;        
-    // }
-    // else{
-    //   //const sp= setPoints.shift();
-    // }; 
-    //console.log("557 stePoints",setPoints) 
+      tampon1=dataCh1;
+      tampon2=mesuressimul;     
+    }; 
+  };   
+    
 };
 
 function drawGrid(lineWidth, cellWidth, cellHeight, color) {
@@ -653,6 +913,7 @@ function clock(time) {
   let x3 = 0;
   let xfft = 0;
   let xc = 0;
+  let xm = 0;
 
   // ctx.beginPath();  
   // for (let i = 0; i < bufferLength; i++) {
@@ -697,9 +958,8 @@ function clock(time) {
 //         const sp= setPoints.shift();
 //     }; 
   ctx.beginPath();   
-  ctx.moveTo(0, HEIGHT/2);
-  console.log("681",setPoints.length*scalex);
-  for(var i=1 ; i < bufferLength*scalex; i++){
+  ctx.moveTo(0, HEIGHT/2);  
+  for(let i=1 ; i < setPoints.length; i++){
     ctx.lineWidth = 1;
     ctx.strokeStyle ="rgb(255, 0,0)"; 
     const v = setPoints[i] / 128.0;
@@ -718,6 +978,28 @@ function clock(time) {
     ctx.stroke();
   }; 
   ctx.stroke(); 
+  //dessin mesure regul
+  ctx.beginPath();   
+  ctx.moveTo(0, HEIGHT/2);
+  for(let i=1 ; i < tampon2.length; i++){
+  //for(let i=1 ; i < bufferLength; i++){
+    ctx.lineWidth = 1;
+    ctx.strokeStyle ="rgba(15, 234, 241, 1)"; 
+    const v = tampon2[i]/128 ;
+    const y = (v * HEIGHT) / 2;   
+
+      if (i === 0) {
+        ctx.moveTo(xm, posch1+(HEIGHT/2-y)*scalech1y);
+      } 
+      else {
+        ctx.lineTo(xm,posch1+ (HEIGHT/2-y)*scalech1y);
+      };
+
+      //xm += (scalex*WIDTH ) / (setPoints.length);
+      //xm += (scalex*WIDTH ) / tampon2.length;
+      xm += (WIDTH ) /( scalex*tampon2.length);
+    ctx.stroke();
+  }; 
 
   ctx.beginPath();
   ctx.lineWidth = 1;
