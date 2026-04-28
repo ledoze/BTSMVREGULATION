@@ -111,7 +111,14 @@ var ki = document.querySelector("#slider-Ki");
 var kd = document.querySelector("#slider-Kd");
 var tau1 = document.querySelector("#slider-tau");
 var gs1 = document.querySelector("#slider-gs");
+var mesureProcess= document.querySelector("#text-mesure");
+var bf = document.querySelector("#button-bf");
+var bo = document.querySelector("#button-bo");
+var perturbplus = document.querySelector("#button-perturbplus");
+var perturbmoins = document.querySelector("#button-perturbmoins");
+var value = document.querySelector("#text-consigne");
 
+var afficheConsigne= document.querySelector("#text-consigne");
 
 var consigne=input.value;
 var process_variable=0.0;
@@ -137,6 +144,9 @@ var mouvement = 0.0;
 var posx=0.0;
 var posy=0.0;
 var stage =0;
+var Erreur_precedente = 0.0;
+var integral=0.0;
+var flagsat = true;
 var flagdebut = true;
 var flagch1gnd  = true;
 var flagch2gnd  = true;
@@ -367,23 +377,19 @@ ch2gnd.addEventListener("click", () => {
 });
 
 ch1dc.addEventListener("click", () => { 
-  flagch1dc = !flagch1dc;
-  
+  flagch1dc = !flagch1dc;  
   if (flagch1dc!=true){
     ch1dc.style.color="rgb(218 165 32)";
-    ch1dc.style.background = "linear-gradient(to right, #e3e15bff 0%, #f3f3d6ff  51%, #e3e15bff   100%)";
-    ch1ac.style.background ="white";; 
-    
-  ch1moy=eval(dataCh1.join('+'))/(dataCh1.length);
-  v1moy.value=ch1moy;
-  console.log("213 ch1moy ",ch1moy);
+    ch1dc.style.background ="white";
+    ch1ac.style.background = "linear-gradient(to right, #e3e15bff 0%, #f3f3d6ff  51%, #e3e15bff   100%)";  
+    ch1moy=eval(dataCh1.join('+'))/(dataCh1.length);
+    v1moy.value=ch1moy;
+    console.log("213 ch1moy ",ch1moy);
   }
-  else{
-  
-  ch1dc.style.color="rgb(218 165 32)";
-  ch1dc.style.background ="white"; 
-  ch1ac.style.background = "linear-gradient(to right, #e3e15bff 0%, #f3f3d6ff  51%, #e3e15bff   100%)";
-  ch1moy=0;
+  else{  
+    ch1dc.style.color="rgb(218 165 32)";
+    ch1dc.style.background ="linear-gradient(to right, #e3e15bff 0%, #f3f3d6ff  51%, #e3e15bff   100%)";
+    ch1ac.style.background = "white";
   };
   
 });
@@ -409,12 +415,13 @@ ch1ac.addEventListener("click", () => {
   flagch1dc = !flagch1dc;
   if (flagch1dc == true){
     ch1dc.style.color="rgb(218 165 32)";
-    ch1ac.style.background = "linear-gradient(to right, #e3e15bff 0%, #f3f3d6ff  51%, #e3e15bff   100%)";
+    ch1dc.style.background = "linear-gradient(to right, #e3e15bff 0%, #f3f3d6ff  51%, #e3e15bff   100%)";
      
   }
   else{
-    ch1ac.style.background ="white";
+    ch1ac.style.background = "linear-gradient(to right, #e3e15bff 0%, #f3f3d6ff  51%, #e3e15bff   100%)";
     ch1dc.style.color="rgb(218 165 32)";
+    ch1dc.style.background = "white";
     //ch1ac.style.color="goldenrod";
     ch1moy=0;
   };
@@ -565,6 +572,101 @@ v2max.addEventListener("click", () => {
   console.log("289 amplitudech2",amplitudech2)
 });
 
+valid.addEventListener("click", () => {
+    if (stage==0){
+      stage=1;
+      const instant = new Date().getTime();
+      text1=instant.toString();
+      text2=identite.value;
+      text2=text2.concat(" : ",text1);
+      messages=messages.concat(text2);
+      textData.value=messages;  
+      alert("Bravo! Modifier la consigne a 50"); 
+    };
+})
+
+
+bf.addEventListener("click", () => {
+  if(stage<2){
+    const instant = new Date().getTime();
+    text1=instant.toString();
+    text2="Respecter Procédure Appentissage";
+    text2=text2.concat(text1);
+    messages=messages.concat(text2);
+    textData.value=messages;      
+    window.alert("Respecter Procédure Appentissage");
+  }
+  else{
+    flagbo=false;   
+    drawSchema();
+    //compute();
+  };   
+});
+
+bo.addEventListener("click", () => {  
+  flagbo=true;
+  drawSchema(); 
+});
+
+
+input.addEventListener("input", (event) => {
+    if(stage >=1){
+      value.value = input.value;
+      //console.log("138 value inputvalue",value.textContent,input.value);
+      if(stage==1){
+      stage=2;      
+      };
+    }
+    else{
+      text2="  Stage 0 : ";
+      const instant = new Date().getTime();
+      text1=instant.toString();      
+      text2=text2.concat(text1);
+      messages=messages.concat(text2);
+      textData.value=messages;      
+      alert(" Valider Identité!");
+      input.value=0;
+      
+    }; 
+});
+
+
+perturbplus.addEventListener("click", () => {
+  if(stage<2){
+    const instant = new Date().getTime();
+    text1=instant.toString();
+    text2="Respecter Procédure Appentissage";
+    text2=text2.concat(text1);
+    messages=messages.concat(text2);
+    textData.value=messages;      
+    window.alert("Respecter Procédure Appentissage");
+  }
+  else{
+  flagperturbplus=!flagperturbplus;
+  //flagperturbmoins=true;
+  /*console.log("flagperturb",flagperturbplus);
+  alert("273 perturb");*/
+  drawSchema();
+  };
+});
+
+perturbmoins.addEventListener("click", () => {
+  if(stage<2){
+    const instant = new Date().getTime();
+    text1=instant.toString();
+    text2="Respecter Procédure Appentissage";
+    text2=text2.concat(text1);
+    messages=messages.concat(text2);
+    textData.value=messages;      
+    window.alert("Respecter Procédure Appentissage");
+  }
+  else{
+  flagperturbmoins=!flagperturbmoins;
+  //flagperturbplus=true;
+  drawSchema();
+  };
+});
+
 
 /* ######################Debut save fichier###############*/
 function downloadTextFile() {
@@ -593,9 +695,6 @@ function saveImage(){
     createEl.click();
     createEl.remove();
 };
-
-        
-
 /* ######################FIN save fichiers ###############*/
 
 /* ######################Dessin schema###############*/
@@ -605,7 +704,7 @@ function drawSchema(){
   let w = canvasboucle.width;
   let h = canvasboucle.height;
   ctxboucle.beginPath();
-  ctxboucle.fillStyle = '#fff';
+  ctxboucle.fillStyle = '#F0EEE9';
   ctxboucle.fillRect(0, 0, canvasboucle.width, canvasboucle.height);
   //ctxboucle.save();
   ctxboucle.beginPath();
@@ -624,7 +723,7 @@ function drawSchema(){
   ctxboucle.stroke();
   ctxboucle.font = "15px Arial";
   ctxboucle.fillStyle = "#FF0000";
-  ctxboucle.fillText("W", w/60, 2*h/5+h/16);
+  ctxboucle.fillText("W", w/100, 2*h/5+h/16);
   
   ctxboucle.beginPath();
   ctxboucle.strokeStyle ="rgb(0, 0,255)";
@@ -649,7 +748,7 @@ function drawSchema(){
   ctxboucle.stroke(); 
   ctxboucle.fillStyle = "#000099";
   ctxboucle.font = "15px Arial";
-  ctxboucle.fillText("Actionneur", w/8+w/7+w/15+h/16, 2*h/5+3*h/16);
+  ctxboucle.fillText("Actionneur", w/8+w/7+w/15+h/100, 2*h/5+3*h/16);
   ctxboucle.fillText("System",w/8+2*w/7+2*w/15+h/16, 2*h/5+3*h/16);
   ctxboucle.fillText("Capteur", w/8+3*w/7+3*w/15+h/16, 2*h/5+3*h/16);
   ctxboucle.fillStyle = "#DAA520";
@@ -686,7 +785,7 @@ function drawSchema(){
   ctxboucle.font = "25px Arial";
   ctxboucle.fillText("+", w/14-3*h/32, 2*h/5+h/8);
   ctxboucle.fillText("-", w/14+h/32, 2*h/5+2*h/8-h/32);  
-  ctxboucle.fillText("P  I  D", w/8+h/16, 2*h/5+3*h/16);
+  ctxboucle.fillText("P I D", w/8+h/16, 2*h/5+3*h/16);
   if(flagperturbplus!=true){
   ctxboucle.fillStyle = "#009900";
   ctxboucle.fillText("+", w/2-h/16, h/5+h/32);
@@ -705,47 +804,6 @@ drawSchema();
 
 
 
-function processing(){
-  var consigne = input.value;
-  //var gains =gs1.value;
-  const delta= 10000;
-  if(flagbo == true ){    
-    process_variable = ( process_variable*tau1.value/(tau1.value+delta) +gains*consigne*delta/(tau1.value+delta) );
-    outputregul.push(0);
-    mesuressimul.push(parseFloat(process_variable));
-    //console.log("527 proces",process_variable)
-  }
-  else{
-    //Calcul erreur
-    var error = consigne - process_variable;
-    console.log("409 error ",error,consigne);
-    // terme Proportionel 
-    var P_out = kp.value * error;
-    console.log("411 P_out ",P_out);
-    // terme Integral 
-    integral += error * delta;
-    var I_out = ki.value * integral;            
-    // terme Derive 
-    var derivative = (error - Erreur_precedente) / delta;
-    var D_out = kd.value * derivative;            
-    // Calcul sortie totale: output
-    var sortie = P_out + I_out + D_out;           
-    if (flagsat == true){
-      if (sortie > 100 ){
-          sortie=100;
-      };                   
-      if (sortie < 0 ){
-        sortie = 0 ;
-      };
-    };                   
-    // Update Erreur_précedente
-    Erreur_precedente = error;
-    process_variable = ( process_variable*10*tau.value/(10*tau.value+delta) +gains*sortie*delta/(10*tau.value+delta) );
-    outputregul.push(sortie);
-    mesuressimul.push(parseFloat(process_variable));         
-  };
-};
-
 
 // to play 1 second we need array of 44100 numbers
 const sampleRate = 44100;
@@ -757,12 +815,7 @@ var echellex =(1/scalex).toString();
 
 function compute(time) {
  // console.log("587 audioCtx.currentTime",audioCtx.currentTime);
-    consigne=input.value; 
-    //setPoints.push(consigne);   
-    // if(setPoints.length >WIDTH-1){
-    //     const sp= setPoints.shift();
-    // };
-
+    consigne=input.value;
     analyser.getByteTimeDomainData(dataArray);
     analyser2.getByteTimeDomainData(dataArray2);
     analyserfft.getByteFrequencyData(dataFft1);
@@ -773,12 +826,27 @@ function compute(time) {
     //console.log("445 max fft",maxfft);
     //console.log("446 index of max fft",dataFft1.indexOf(maxfft));    
     v1moy.value=eval(dataCh1.join('+'))/(dataCh1.length)*1;  
-    ch1moy=eval(dataCh1.join('+'))/(dataCh1.length);
-    //setPoints=[];
+    if(flagch1dc != true){
+      ch1moy=eval(dataCh1.join('+'))/(dataCh1.length);
+    }
+    else{
+      ch1moy=0;
+    };    
     var top1=[];
     var deltaT1=0.0;
     var cons =[];
     var delta= 1/10;
+
+    if(flagperturbplus!=true){            
+        gains=gs1.value*1.1;
+      }
+    else{
+        gains=gs1.value;
+      };
+    if(flagperturbmoins!=true){ 
+        gains=gs1.value*0.9;
+      };
+
     if(flagpause == true){
     for (let i=0; i < dataCh1.length-1; i++){      
       if( dataCh1[i] < v1moy.value && dataCh1[i+1] > v1moy.value){       
@@ -787,33 +855,50 @@ function compute(time) {
         setPoints.push(input.value); 
         //processing();
         
-        
-        process_variable = ( process_variable*10*tau1.value/(10*tau1.value+delta) +gains*consigne*delta/(10*tau1.value+delta) );
-        //process_variable = ( process_variable*tau1.value/(tau1.value+delta) +gains*input.value*delta/(tau1.value+delta) );
+        if(flagbo==true){
+        process_variable = ( process_variable*10*tau1.value/(10*tau1.value+delta) +gains*consigne*delta/(10*tau1.value+delta) );        
         outputregul.push(0);
         mesuressimul.push(parseFloat(process_variable));
+        }
+        else{
+                      //Calcul erreur
+            var error = consigne - process_variable;
+           // console.log("409 error ",error,consigne);
+            // terme Proportionel 
+            var P_out = kp.value * error;
+           // console.log("411 P_out ",P_out);
+            // terme Integral 
+            integral += error * delta;
+            var I_out = ki.value * integral;            
+            // terme Derive 
+            var derivative = (error - Erreur_precedente) / delta;
+            D_out = kd.value * derivative;            
+            // Calcul sortie totale: output
+            var sortie = P_out + I_out + D_out;           
+            if (flagsat == true){
+                if (sortie > 100 ){
+                sortie=100;
+                };                   
+                if (sortie < 0 ){
+                 sortie = 0 ;
+                };
+            };                   
+            // Update Erreur_précedente
+            Erreur_precedente = error;
+            process_variable = ( process_variable*10*tau1.value/(10*tau1.value+delta) +gains*sortie*delta/(10*tau1.value+delta) );          
+            outputregul.push(sortie);
+            mesuressimul.push(parseFloat(process_variable));                             
+          };
+        
         //console.log("606 top1.length ",top1.length,process_variable);
         if( setPoints.length > (WIDTH-1)/scalex){
           const sp= setPoints.shift();
-          const ms= mesuressimul.shift();          
+          const ms= mesuressimul.shift(); 
+          const op=outputregul.shift();         
         };        
         //regulation        
       };
-      //process_variable = ( process_variable*tau1.value/(tau1.value+top1.length/bufferLength) +gains*input.value*top1.length/bufferLength/(tau1.value+top1.length)/bufferLength );
-      //outputregul.push(0);
-      //mesuressimul.push(parseFloat(process_variable));
-      //console.log("613 processvariable",process_variable,tau1.value,gains,top1.length,mesuressimul.length,setPoints.length)
-      // if(mesuressimul.length > (WIDTH-1)*scalex){          
-      //     const ms =mesuressimul.shift();          
-      //   };
-      //   if(outputregul.length > (WIDTH-1)*scalex){          
-      //     const op =outputregul.shift();         
-      //   };
-       //setPoints.push(input.value); 
-    //   if(setPoints.length >WIDTH-1){
-    //     const sp= setPoints.shift();
-    // }; 
-      //console.log("624 top1.length ",top1.length,process_variable);
+    
     };
     if(flagtrigch1!=true){      
       tampon1=dataCh1.slice(top1[1],top1[scalex*2]);
@@ -832,7 +917,8 @@ function compute(time) {
       tampon2=mesuressimul;     
     }; 
   };   
-    
+  mesureProcess.value=process_variable.toFixed(0); 
+  afficheConsigne.value=input.value;   
 };
 
 function drawGrid(lineWidth, cellWidth, cellHeight, color) {
@@ -896,24 +982,25 @@ function drawGrid(lineWidth, cellWidth, cellHeight, color) {
   
 };
 
-function clock(time) {
-  //consigne=input.value;
+function clock(time) {  
   compute();
-
   // Dessin Axes
-
   ctx.fillStyle = "rgb(0 0 0)";
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
   drawGrid(1, WIDTH/10, HEIGHT/10, "white");
   ctx.lineWidth = 2;
   ctx.strokeStyle = "rgb(218 165 32)";
   const sliceWidth = (WIDTH * scalex) / bufferLength;
+  //valeur interval déplacements en axe x
   let x = 0;
   let x2 = 0;
   let x3 = 0;
   let xfft = 0;
   let xc = 0;
   let xm = 0;
+  let xop = 0;
+
+  //Courbe gene1
 
   // ctx.beginPath();  
   // for (let i = 0; i < bufferLength; i++) {
@@ -930,10 +1017,11 @@ function clock(time) {
   // };
   // ctx.lineTo(WIDTH, HEIGHT / 2);
   // ctx.stroke();
+
+  //Courbe gene2
+
   ctx.beginPath();
-  ctx.strokeStyle = "rgb(0 0 255)";
-  
-  
+  ctx.strokeStyle = "rgb(0 0 255)";  
   ctx.fillText(echellex, WIDTH-WIDTH/7, HEIGHT/2+HEIGHT/20);
   for (let i = 0; i < bufferLength2; i++) {    
     const v = dataArray2[i] / 128.0;
@@ -949,14 +1037,9 @@ function clock(time) {
   };
   ctx.lineTo(WIDTH, HEIGHT / 2);
   ctx.stroke();
+
 // Dessin Courbe Consigne
- /*if(setPoints.length >WIDTH-1){
-        const sp= setPoints.shift();
-    };
- */  
-// if(setPoints.length >bufferLength){
-//         const sp= setPoints.shift();
-//     }; 
+
   ctx.beginPath();   
   ctx.moveTo(0, HEIGHT/2);  
   for(let i=1 ; i < setPoints.length; i++){
@@ -1000,6 +1083,7 @@ function clock(time) {
       xm += (WIDTH ) /( scalex*tampon2.length);
     ctx.stroke();
   }; 
+//dessin ch1 scope
 
   ctx.beginPath();
   ctx.lineWidth = 1;
@@ -1030,6 +1114,29 @@ function clock(time) {
     };
     ctx.stroke();  
   };
+//Dessin sortie regulateur
+
+if(flagbo != true){     
+    ctx.beginPath();   
+    for(var i=1 ; i < outputregul.length/scalex; i++){          
+      ctx.strokeStyle ="#29f333ff";
+
+      const v = outputregul[i] / 128.0;
+      const y = (v * HEIGHT) / 2;       
+
+      if (i === 0) {
+        ctx.moveTo(xop, posch1+(HEIGHT/2-y)*scalech1y);
+      } 
+      else {
+        ctx.lineTo(xop,+posch1+ (HEIGHT/2-y)*scalech1y);
+      };
+
+      xop += (WIDTH ) /( scalex*tampon2.length);
+    };
+    ctx.stroke();  
+  };
+
+
   if(flagch1fft != true){    
     const barWidth = (WIDTH / bufferLengthFft) * 5 - 1;
     let barHeight;    
